@@ -831,6 +831,109 @@
         .drag-ghost {
             opacity: 0.8;
         }
+
+        /* Video Panel */
+        .video-panel {
+            margin-bottom: 20px;
+        }
+
+        .video-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--color-background);
+            border: 3px solid var(--color-wood);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .video-toggle:hover {
+            background: #f0e4c8;
+            border-color: var(--color-primary);
+        }
+
+        .video-toggle .toggle-icon {
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .video-toggle.expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .video-toggle .video-icon {
+            font-size: 1.25rem;
+        }
+
+        .video-content {
+            display: none;
+            margin-top: -3px;
+            padding: 20px;
+            background: var(--color-background);
+            border: 3px solid var(--color-wood);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .video-content.expanded {
+            display: block;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3B2A1A 0%, #5a4030 100%);
+            color: var(--color-background);
+            border-radius: 8px;
+        }
+
+        .video-placeholder .placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .video-placeholder .placeholder-text {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -862,6 +965,24 @@
                         <li>What sort of things do you find easy that others find difficult?</li>
                     </ol>
                     <p>When you are clear on your strengths, choose <strong>5-7 of the Equipment cards</strong> from the gallery below to represent those. It doesn't matter what those cards are, what matters is what those cards mean to you.</p>
+                </div>
+            </div>
+
+            <!-- Video Panel Step 1 -->
+            <div class="video-panel">
+                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+                    <span class="toggle-icon">▶</span>
+                    <span class="video-icon">🎬</span>
+                    <span>Watch: How to Choose Your Equipment</span>
+                </button>
+                <div class="video-content" id="videoContent1">
+                    <div class="video-wrapper">
+                        <!-- Replace data-video-url with your Vimeo/YouTube embed URL -->
+                        <div class="video-placeholder" data-video-url="">
+                            <span class="placeholder-icon">🎥</span>
+                            <span class="placeholder-text">Video coming soon</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -908,6 +1029,23 @@
                 <div class="instructions">
                     <p><strong>Now think of a project, goal or challenge that is important to you right now.</strong> The more specific the better. For example, a career transition, a business goal, a health related challenge.</p>
                     <p>Then use the terrain cards from the gallery below to represent and map out this project, goal or journey. Start by thinking <em>where you want to go</em>, then <em>where you are now</em>, and then map the <em>terrain that lies in between</em>.</p>
+                </div>
+            </div>
+
+            <!-- Video Panel Step 2 -->
+            <div class="video-panel">
+                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+                    <span class="toggle-icon">▶</span>
+                    <span class="video-icon">🎬</span>
+                    <span>Watch: How to Map Your Journey</span>
+                </button>
+                <div class="video-content" id="videoContent2">
+                    <div class="video-wrapper">
+                        <div class="video-placeholder" data-video-url="">
+                            <span class="placeholder-icon">🎥</span>
+                            <span class="placeholder-text">Video coming soon</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -986,6 +1124,23 @@
                 <div class="instructions">
                     <p><strong>Whatever journey you are on, you always carry your strengths.</strong></p>
                     <p>In this section, reflect on how you can use the strengths you have to navigate the journey you face. Drag your equipment cards onto the terrain tiles where you think those strengths will be most useful.</p>
+                </div>
+            </div>
+
+            <!-- Video Panel Step 3 -->
+            <div class="video-panel">
+                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+                    <span class="toggle-icon">▶</span>
+                    <span class="video-icon">🎬</span>
+                    <span>Watch: How to Apply Your Strengths</span>
+                </button>
+                <div class="video-content" id="videoContent3">
+                    <div class="video-wrapper">
+                        <div class="video-placeholder" data-video-url="">
+                            <span class="placeholder-icon">🎥</span>
+                            <span class="placeholder-text">Video coming soon</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1742,6 +1897,40 @@ Created with NarraWay`;
         function exportAll() {
             exportMapAsImage();
             setTimeout(exportNotes, 500);
+        }
+
+        // ========== VIDEO TOGGLE ==========
+        function toggleVideo(button) {
+            const isExpanded = button.classList.toggle('expanded');
+            button.setAttribute('aria-expanded', isExpanded);
+            const content = button.nextElementSibling;
+            content.classList.toggle('expanded');
+
+            // Lazy load video if URL is set and not already loaded
+            if (isExpanded) {
+                const placeholder = content.querySelector('.video-placeholder');
+                if (placeholder) {
+                    const videoUrl = placeholder.getAttribute('data-video-url');
+                    if (videoUrl) {
+                        const wrapper = placeholder.parentElement;
+                        wrapper.innerHTML = `<iframe src="${videoUrl}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+                    }
+                }
+            }
+        }
+
+        // Function to set video URL programmatically
+        function setVideoUrl(stepNumber, url) {
+            const placeholder = document.querySelector(`#videoContent${stepNumber} .video-placeholder`);
+            if (placeholder) {
+                placeholder.setAttribute('data-video-url', url);
+                // If already expanded, load immediately
+                const content = document.getElementById(`videoContent${stepNumber}`);
+                if (content.classList.contains('expanded')) {
+                    const wrapper = placeholder.parentElement;
+                    wrapper.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+                }
+            }
         }
 
         // ========== NAVIGATION ==========
