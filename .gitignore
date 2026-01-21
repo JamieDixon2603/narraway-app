@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
+
+# Build artifacts
+node_modules/
+dist/
