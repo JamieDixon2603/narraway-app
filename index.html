@@ -1008,7 +1008,7 @@
     <!-- Header -->
     <header class="header">
         <img src="" id="headerLogo" class="header-logo" alt="NarraWay">
-        <div class="step-indicators">
+        <div class="step-indicators"><button class="btn btn-secondary" id="logoutBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 16px;">Log Out</button>
             <button class="step-dot active" data-step="1" id="stepDot1">1</button>
             <button class="step-dot future" data-step="2" id="stepDot2">2</button>
             <button class="step-dot future" data-step="3" id="stepDot3">3</button>
@@ -2133,6 +2133,13 @@ Created with NarraWay`;
         // Login button click handler
         document.getElementById('loginBtn').addEventListener('click', function() {
             memberstack.openModal('LOGIN');
+        });
+
+        // Logout button click handler
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            memberstack.logout().then(() => {
+                window.location.reload();
+            });
         });
 
         // Signup button click handler
