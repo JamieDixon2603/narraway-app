@@ -604,21 +604,6 @@
             display: flex;
         }
 
-        /* Compass Rose */
-        .compass-rose {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 80px;
-            height: 80px;
-            opacity: 0.4;
-            transition: opacity 0.3s ease;
-        }
-
-        .compass-rose.hidden {
-            opacity: 0;
-        }
-
         /* Validation Message */
         .validation-msg {
             color: var(--color-secondary);
@@ -1095,17 +1080,6 @@
                     </div>
                     <div class="map-container">
                         <div class="map-grid" id="mapGrid"></div>
-                        <svg class="compass-rose" id="compassRose" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="48" fill="none" stroke="#8B5A2B" stroke-width="2" opacity="0.5"/>
-                            <polygon points="50,5 55,45 50,35 45,45" fill="#8B5A2B" opacity="0.6"/>
-                            <polygon points="50,95 55,55 50,65 45,55" fill="#8B5A2B" opacity="0.4"/>
-                            <polygon points="5,50 45,45 35,50 45,55" fill="#8B5A2B" opacity="0.4"/>
-                            <polygon points="95,50 55,45 65,50 55,55" fill="#8B5A2B" opacity="0.4"/>
-                            <text x="50" y="20" text-anchor="middle" font-size="10" fill="#8B5A2B" font-weight="bold">N</text>
-                            <text x="50" y="88" text-anchor="middle" font-size="10" fill="#8B5A2B">S</text>
-                            <text x="15" y="54" text-anchor="middle" font-size="10" fill="#8B5A2B">W</text>
-                            <text x="85" y="54" text-anchor="middle" font-size="10" fill="#8B5A2B">E</text>
-                        </svg>
                     </div>
                     <p class="validation-msg" id="mapValidation">Please fill all map tiles (0/12 filled)</p>
                 </div>
@@ -1547,11 +1521,6 @@
                     grid.appendChild(cell);
                 }
             }
-            
-            // Update compass visibility
-            const lastCellKey = `${state.mapRows - 1}-${state.mapCols - 1}`;
-            const compass = $('compassRose');
-            compass.classList.toggle('hidden', !!state.placedTerrain[lastCellKey]);
             
             updateTerrainCounter();
         }
