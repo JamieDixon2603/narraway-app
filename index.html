@@ -2126,13 +2126,16 @@ Created with NarraWay`;
         document.addEventListener('DOMContentLoaded', init);
     </script>
     </div><!-- End app-content -->
-    <!-- Memberstack Auth Check -->
     <script>
         const memberstack = window.$memberstackDom;
 
         // Login button click handler
         document.getElementById('loginBtn').addEventListener('click', function() {
-            memberstack.openModal('LOGIN');
+            memberstack.openModal('LOGIN').then(({ data, type }) => {
+                if (data && data.member) {
+                    window.location.reload();
+                }
+            });
         });
 
         // Logout button click handler
@@ -2144,7 +2147,11 @@ Created with NarraWay`;
 
         // Signup button click handler
         document.getElementById('signupBtn').addEventListener('click', function() {
-            memberstack.openModal('SIGNUP');
+            memberstack.openModal('SIGNUP').then(({ data, type }) => {
+                if (data && data.member) {
+                    window.location.reload();
+                }
+            });
         });
 
         // Check if user is logged in
