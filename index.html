@@ -997,8 +997,8 @@
             <h1>Welcome to NarraWay</h1>
             <p>Please log in to access your journey mapping experience.</p>
             <div class="login-buttons">
-                <button class="btn btn-primary" data-ms-action="login">Log In</button>
-                <button class="btn btn-secondary" data-ms-action="signup">Sign Up</button>
+                <button class="btn btn-primary" id="loginBtn">Log In</button>
+                <button class="btn btn-secondary" id="signupBtn">Sign Up</button>
             </div>
         </div>
     </div>
@@ -2126,11 +2126,22 @@ Created with NarraWay`;
         document.addEventListener('DOMContentLoaded', init);
     </script>
     </div><!-- End app-content -->
-
     <!-- Memberstack Auth Check -->
     <script>
+        const memberstack = window.$memberstackDom;
+
+        // Login button click handler
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            memberstack.openModal('LOGIN');
+        });
+
+        // Signup button click handler
+        document.getElementById('signupBtn').addEventListener('click', function() {
+            memberstack.openModal('SIGNUP');
+        });
+
         // Check if user is logged in
-        window.$memberstackDom.getCurrentMember().then(({ data: member }) => {
+        memberstack.getCurrentMember().then(({ data: member }) => {
             const loginGate = document.getElementById('loginGate');
             const appContent = document.getElementById('appContent');
 
