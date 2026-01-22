@@ -118,6 +118,189 @@
             transform: scale(1.1);
         }
 
+        /* My Journeys Dropdown */
+        .journeys-dropdown {
+            position: relative;
+            margin-right: 16px;
+        }
+
+        .journeys-btn {
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .journeys-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border: 2px solid var(--color-wood);
+            border-radius: 8px;
+            min-width: 250px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .journeys-menu.open {
+            display: block;
+        }
+
+        .journeys-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .journey-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .journey-item:hover {
+            background: var(--color-background);
+        }
+
+        .journey-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .journey-item-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .journey-item-date {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .journey-delete-btn {
+            background: none;
+            border: none;
+            color: var(--color-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 1rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .journey-delete-btn:hover {
+            opacity: 1;
+        }
+
+        .journeys-actions {
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            gap: 6px;
+            background: #f5f5f5;
+        }
+
+        .journey-action-btn {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .journey-action-btn:first-child {
+            background: var(--color-primary);
+            color: var(--color-text);
+        }
+
+        .journey-action-btn:first-child:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .journey-action-btn:last-child {
+            background: var(--color-tertiary-light);
+            color: white;
+        }
+
+        .journey-action-btn:last-child:hover {
+            background: var(--color-tertiary-dark);
+        }
+
+        .journeys-empty {
+            padding: 16px;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Save Journey Modal */
+        .save-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-modal-overlay.open {
+            display: flex;
+        }
+
+        .save-modal {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .save-modal h3 {
+            margin-bottom: 16px;
+            color: var(--color-text);
+        }
+
+        .save-modal input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .save-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .save-modal-buttons .btn {
+            font-size: 0.85rem;
+            padding: 8px 16px;
+        }
+
         /* Main Content */
         .main-content {
             background: var(--color-background);
@@ -990,6 +1173,18 @@
     </style>
 </head>
 <body>
+    <!-- Save Journey Modal -->
+    <div class="save-modal-overlay" id="saveModalOverlay">
+        <div class="save-modal">
+            <h3>Save Journey</h3>
+            <input type="text" id="journeyNameInput" placeholder="Enter a name for this journey..." maxlength="50">
+            <div class="save-modal-buttons">
+                <button class="btn btn-secondary" id="cancelSaveBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmSaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Gate (shown when not logged in) -->
     <div class="login-gate" id="loginGate">
         <div class="login-box">
@@ -1008,7 +1203,23 @@
     <!-- Header -->
     <header class="header">
         <img src="" id="headerLogo" class="header-logo" alt="NarraWay">
-        <div class="step-indicators"><button class="btn btn-secondary" id="logoutBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 16px;">Log Out</button>
+        <div class="step-indicators">
+            <!-- My Journeys Dropdown -->
+            <div class="journeys-dropdown" id="journeysDropdown">
+                <button class="btn btn-primary journeys-btn" id="journeysBtn">
+                    My Journeys ▼
+                </button>
+                <div class="journeys-menu" id="journeysMenu">
+                    <div class="journeys-list" id="journeysList">
+                        <!-- Saved journeys will be populated here -->
+                    </div>
+                    <div class="journeys-actions">
+                        <button class="journey-action-btn" id="saveJourneyBtn">💾 Save Current</button>
+                        <button class="journey-action-btn" id="newJourneyBtn">✨ New Journey</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" id="logoutBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 16px;">Log Out</button>
             <button class="step-dot active" data-step="1" id="stepDot1">1</button>
             <button class="step-dot future" data-step="2" id="stepDot2">2</button>
             <button class="step-dot future" data-step="3" id="stepDot3">3</button>
@@ -2129,6 +2340,260 @@ Created with NarraWay`;
     <script>
         const memberstack = window.$memberstackDom;
 
+        // ========== CLOUD SAVE FUNCTIONALITY ==========
+        const MAX_JOURNEYS = 5;
+        let currentJourneyId = null;
+        let savedJourneys = [];
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Get current state as saveable object
+        function getCurrentStateData() {
+            return {
+                currentStep: state.currentStep,
+                selectedEquipment: Array.from(state.selectedEquipment),
+                mapCols: state.mapCols,
+                mapRows: state.mapRows,
+                placedTerrain: { ...state.placedTerrain },
+                terrainUsage: { ...state.terrainUsage },
+                placedEquipment: { ...state.placedEquipment },
+                notes1: document.getElementById('notes1').value,
+                notes2: document.getElementById('notes2').value,
+                notes3: document.getElementById('notes3').value
+            };
+        }
+
+        // Load state from saved data
+        function loadStateData(data) {
+            state.currentStep = data.currentStep || 1;
+            state.selectedEquipment = new Set(data.selectedEquipment || []);
+            state.mapCols = data.mapCols || 4;
+            state.mapRows = data.mapRows || 3;
+            state.placedTerrain = data.placedTerrain || {};
+            state.terrainUsage = data.terrainUsage || {};
+            state.placedEquipment = data.placedEquipment || {};
+
+            document.getElementById('notes1').value = data.notes1 || '';
+            document.getElementById('notes2').value = data.notes2 || '';
+            document.getElementById('notes3').value = data.notes3 || '';
+
+            // Update map size buttons
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.toggle('active',
+                    parseInt(btn.dataset.cols) === state.mapCols &&
+                    parseInt(btn.dataset.rows) === state.mapRows);
+            });
+
+            // Re-render all views
+            renderEquipmentGallery();
+            renderSelectedEquipment();
+            renderTerrainGallery();
+            renderMap();
+            renderStrategyMap();
+            goToStep(state.currentStep);
+        }
+
+        // Load journeys from Memberstack
+        async function loadJourneysFromCloud() {
+            try {
+                const result = await memberstack.getMemberJSON();
+                savedJourneys = (result && result.data && result.data.journeys) || [];
+                renderJourneysList();
+            } catch (error) {
+                console.error('Error loading journeys:', error);
+                savedJourneys = [];
+            }
+        }
+
+        // Save journeys to Memberstack
+        async function saveJourneysToCloud() {
+            try {
+                await memberstack.updateMemberJSON({ json: { journeys: savedJourneys } });
+            } catch (error) {
+                console.error('Error saving journeys:', error);
+                alert('Failed to save to cloud. Please try again.');
+            }
+        }
+
+        // Render journeys list in dropdown
+        function renderJourneysList() {
+            const list = document.getElementById('journeysList');
+
+            if (savedJourneys.length === 0) {
+                list.innerHTML = '<div class="journeys-empty">No saved journeys yet</div>';
+                return;
+            }
+
+            list.innerHTML = savedJourneys.map(j => `
+                <div class="journey-item" data-id="${j.id}">
+                    <div class="journey-item-info" onclick="loadJourney('${j.id}')">
+                        <div class="journey-item-name">${escapeHtml(j.name)}</div>
+                        <div class="journey-item-date">${new Date(j.lastModified).toLocaleDateString()}</div>
+                    </div>
+                    <button class="journey-delete-btn" onclick="event.stopPropagation(); deleteJourney('${j.id}')" title="Delete">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Escape HTML for safe rendering
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Save current journey
+        async function saveJourney(name, existingId = null) {
+            const id = existingId || generateId();
+            const journeyData = {
+                id: id,
+                name: name,
+                lastModified: new Date().toISOString(),
+                data: getCurrentStateData()
+            };
+
+            if (existingId) {
+                // Update existing journey
+                const index = savedJourneys.findIndex(j => j.id === existingId);
+                if (index !== -1) {
+                    savedJourneys[index] = journeyData;
+                }
+            } else {
+                // Check limit
+                if (savedJourneys.length >= MAX_JOURNEYS) {
+                    alert(`You can only save up to ${MAX_JOURNEYS} journeys. Please delete one first.`);
+                    return false;
+                }
+                savedJourneys.push(journeyData);
+            }
+
+            currentJourneyId = id;
+            await saveJourneysToCloud();
+            renderJourneysList();
+            return true;
+        }
+
+        // Load a journey
+        async function loadJourney(id) {
+            const journey = savedJourneys.find(j => j.id === id);
+            if (journey) {
+                currentJourneyId = id;
+                loadStateData(journey.data);
+                closeJourneysMenu();
+            }
+        }
+
+        // Delete a journey
+        async function deleteJourney(id) {
+            if (!confirm('Are you sure you want to delete this journey?')) {
+                return;
+            }
+
+            savedJourneys = savedJourneys.filter(j => j.id !== id);
+            if (currentJourneyId === id) {
+                currentJourneyId = null;
+            }
+            await saveJourneysToCloud();
+            renderJourneysList();
+        }
+
+        // Start new journey
+        function startNewJourney() {
+            if (confirm('Start a new journey? Any unsaved changes will be lost.')) {
+                currentJourneyId = null;
+                resetJourney();
+                closeJourneysMenu();
+            }
+        }
+
+        // Toggle journeys dropdown
+        function toggleJourneysMenu() {
+            const menu = document.getElementById('journeysMenu');
+            menu.classList.toggle('open');
+        }
+
+        // Close journeys dropdown
+        function closeJourneysMenu() {
+            document.getElementById('journeysMenu').classList.remove('open');
+        }
+
+        // Open save modal
+        function openSaveModal() {
+            const overlay = document.getElementById('saveModalOverlay');
+            const input = document.getElementById('journeyNameInput');
+
+            // If editing existing journey, pre-fill name
+            if (currentJourneyId) {
+                const journey = savedJourneys.find(j => j.id === currentJourneyId);
+                input.value = journey ? journey.name : '';
+            } else {
+                input.value = '';
+            }
+
+            overlay.classList.add('open');
+            input.focus();
+            closeJourneysMenu();
+        }
+
+        // Close save modal
+        function closeSaveModal() {
+            document.getElementById('saveModalOverlay').classList.remove('open');
+        }
+
+        // Confirm save
+        async function confirmSave() {
+            const name = document.getElementById('journeyNameInput').value.trim();
+            if (!name) {
+                alert('Please enter a name for your journey.');
+                return;
+            }
+
+            const success = await saveJourney(name, currentJourneyId);
+            if (success) {
+                closeSaveModal();
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+
+        // Journeys dropdown toggle
+        document.getElementById('journeysBtn').addEventListener('click', toggleJourneysMenu);
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('journeysDropdown');
+            if (!dropdown.contains(e.target)) {
+                closeJourneysMenu();
+            }
+        });
+
+        // Save button
+        document.getElementById('saveJourneyBtn').addEventListener('click', openSaveModal);
+
+        // New journey button
+        document.getElementById('newJourneyBtn').addEventListener('click', startNewJourney);
+
+        // Save modal buttons
+        document.getElementById('cancelSaveBtn').addEventListener('click', closeSaveModal);
+        document.getElementById('confirmSaveBtn').addEventListener('click', confirmSave);
+
+        // Enter key in save modal
+        document.getElementById('journeyNameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                confirmSave();
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('saveModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSaveModal();
+            }
+        });
+
         // Login button click handler
         document.getElementById('loginBtn').addEventListener('click', function() {
             memberstack.openModal('LOGIN').then(({ data, type }) => {
@@ -2164,6 +2629,9 @@ Created with NarraWay`;
                 loginGate.classList.add('hidden');
                 appContent.classList.remove('hidden');
                 console.log('Logged in as:', member.auth.email);
+
+                // Load saved journeys from cloud
+                loadJourneysFromCloud();
             } else {
                 // User is not logged in - show login gate, hide app
                 loginGate.classList.remove('hidden');
