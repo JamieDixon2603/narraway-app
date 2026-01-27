@@ -31,7 +31,10 @@
         }
 
         /* Hide Memberstack Test Mode Badge */
-        [data-ms-dialog="test-mode"] {
+        [data-ms-dialog="test-mode"],
+        #__ms_test_mode__,
+        [id^="__ms"],
+        iframe[src*="memberstack"] {
             display: none !important;
         }
 
