@@ -2841,6 +2841,15 @@ Created with NarraWay`;
     <script>
         const memberstack = window.$memberstackDom;
 
+        // Listen for member logged in event - handles redirect after signup
+        memberstack.onMemberLoaded((member) => {
+            if (member && member.data) {
+                console.log('Member loaded:', member.data.auth.email);
+                // Reload to trigger the payment check
+                window.location.reload();
+            }
+        });
+
         // ========== CLOUD SAVE FUNCTIONALITY ==========
         const MAX_JOURNEYS = 5;
         let currentJourneyId = null;
@@ -3111,22 +3120,10 @@ Created with NarraWay`;
             });
         });
 
-        // Signup button click handler - opens signup then redirects to Stripe checkout
-        document.getElementById('signupBtn').addEventListener('click', async function() {
-            console.log('Signup button clicked');
-            try {
-                const result = await memberstack.openModal('SIGNUP');
-                console.log('Modal result:', result);
-                if (result && result.data && result.data.member) {
-                    console.log('Signup successful, redirecting to checkout...');
-                    // After signup, redirect to Stripe checkout for payment
-                    await memberstack.purchasePlansWithCheckout({
-                        priceId: 'prc_lifetime-access-q013t0w6h'
-                    });
-                }
-            } catch (error) {
-                console.error('Signup error:', error);
-            }
+        // Signup button click handler - opens signup modal
+        // After signup, page will detect unpaid member and redirect to checkout
+        document.getElementById('signupBtn').addEventListener('click', function() {
+            memberstack.openModal('SIGNUP');
         });
 
         // Check if user is logged in AND has paid
