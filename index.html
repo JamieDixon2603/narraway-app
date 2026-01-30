@@ -3112,30 +3112,48 @@ Created with NarraWay`;
         });
 
         // Signup button click handler - opens signup then redirects to Stripe checkout
-        document.getElementById('signupBtn').addEventListener('click', function() {
-            memberstack.openModal('SIGNUP').then(({ data, type }) => {
-                if (data && data.member) {
+        document.getElementById('signupBtn').addEventListener('click', async function() {
+            console.log('Signup button clicked');
+            try {
+                const result = await memberstack.openModal('SIGNUP');
+                console.log('Modal result:', result);
+                if (result && result.data && result.data.member) {
+                    console.log('Signup successful, redirecting to checkout...');
                     // After signup, redirect to Stripe checkout for payment
-                    memberstack.purchasePlansWithCheckout({
+                    await memberstack.purchasePlansWithCheckout({
                         priceId: 'prc_lifetime-access-q013t0w6h'
                     });
                 }
-            });
+            } catch (error) {
+                console.error('Signup error:', error);
+            }
         });
 
-        // Check if user is logged in
+        // Check if user is logged in AND has paid
         memberstack.getCurrentMember().then(({ data: member }) => {
             const loginGate = document.getElementById('loginGate');
             const appContent = document.getElementById('appContent');
 
             if (member) {
-                // User is logged in - show app, hide login gate
-                loginGate.classList.add('hidden');
-                appContent.classList.remove('hidden');
                 console.log('Logged in as:', member.auth.email);
+                console.log('Member plans:', member.planConnections);
 
-                // Load saved journeys from cloud
-                loadJourneysFromCloud();
+                // Check if member has an active plan (has paid)
+                const hasPaidPlan = member.planConnections && member.planConnections.length > 0;
+
+                if (hasPaidPlan) {
+                    // User is logged in AND has paid - show app, hide login gate
+                    loginGate.classList.add('hidden');
+                    appContent.classList.remove('hidden');
+                    // Load saved journeys from cloud
+                    loadJourneysFromCloud();
+                } else {
+                    // User is logged in but hasn't paid - redirect to checkout
+                    console.log('User logged in but no plan - redirecting to checkout');
+                    memberstack.purchasePlansWithCheckout({
+                        priceId: 'prc_lifetime-access-q013t0w6h'
+                    });
+                }
             } else {
                 // User is not logged in - show login gate, hide app
                 loginGate.classList.remove('hidden');
