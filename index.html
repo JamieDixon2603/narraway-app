@@ -1496,7 +1496,7 @@
 
             <div class="home-buttons">
                 <button class="btn btn-primary" id="loginBtn">Log In</button>
-                <button class="btn btn-secondary" data-ms-price:add="prc_lifetime-access-to-narraway-eyhj0e90">Sign Up</button>
+                <button class="btn btn-secondary" id="signupBtn">Sign Up</button>
             </div>
         </div>
     </div>
@@ -3118,6 +3118,11 @@ Created with NarraWay`;
             memberstack.logout().then(() => {
                 window.location.reload();
             });
+        });
+
+        // Signup button click handler
+        document.getElementById('signupBtn').addEventListener('click', function() {
+            memberstack.openModal('SIGNUP');
         });
 
         // Check if user is logged in AND has paid
