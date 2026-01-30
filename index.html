@@ -1120,18 +1120,288 @@
             opacity: 0.9;
         }
 
-        /* Login Gate */
+        /* Home Page / Landing Page */
+        .home-container {
+            max-width: 900px;
+            width: 95%;
+            text-align: center;
+        }
+
+        .home-logo {
+            width: 280px;
+            max-width: 80%;
+            margin-bottom: 24px;
+        }
+
+        .home-title {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            color: var(--color-text);
+            margin-bottom: 8px;
+        }
+
+        .home-subtitle {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+        }
+
+        .home-description {
+            font-size: 1.05rem;
+            color: var(--color-wood);
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Video Carousel */
+        .video-carousel {
+            background: white;
+            border: 3px solid var(--color-wood);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .carousel-main {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .carousel-video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .carousel-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .carousel-video-title {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--color-text);
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .carousel-dot {
+            padding: 10px 20px;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 25px;
+            background: white;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .carousel-dot:hover {
+            border-color: var(--color-primary);
+            background: #fffbf0;
+        }
+
+        .carousel-dot.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: var(--color-text);
+        }
+
+        .home-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .home-buttons .btn {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 1.1rem;
+        }
+
+        /* Multi-Video Section for Steps */
+        .multi-video-section {
+            margin-bottom: 20px;
+        }
+
+        .multi-video-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            background: var(--color-background);
+            border: 3px solid var(--color-wood);
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .multi-video-header:hover {
+            background: #f0e4c8;
+            border-color: var(--color-primary);
+        }
+
+        .multi-video-header .toggle-icon {
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .multi-video-header.expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        .multi-video-header.collapsed {
+            border-radius: 12px;
+        }
+
+        .multi-video-content {
+            display: none;
+            padding: 20px;
+            background: var(--color-background);
+            border: 3px solid var(--color-wood);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .multi-video-content.expanded {
+            display: block;
+        }
+
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .video-item {
+            background: white;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .video-item:hover {
+            border-color: var(--color-primary);
+        }
+
+        .video-item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s ease;
+        }
+
+        .video-item-header:hover {
+            background: #f5f0e5;
+        }
+
+        .video-item-icon {
+            font-size: 1.5rem;
+        }
+
+        .video-item-title {
+            flex: 1;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+
+        .video-item-toggle {
+            font-size: 1.25rem;
+            color: var(--color-wood);
+            transition: transform 0.3s ease;
+        }
+
+        .video-item.playing .video-item-toggle {
+            transform: rotate(90deg);
+        }
+
+        .video-item-player {
+            display: none;
+            padding: 16px;
+            background: white;
+        }
+
+        .video-item.playing .video-item-player {
+            display: block;
+        }
+
+        .video-item-player .video-wrapper {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Video Group Divider */
+        .video-group-label {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--color-wood);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 0;
+            margin-top: 8px;
+            border-top: 1px dashed var(--color-wood-light);
+        }
+
+        .video-group-label:first-child {
+            margin-top: 0;
+            border-top: none;
+            padding-top: 0;
+        }
+
+        /* Login Gate / Home Page */
         .login-gate {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--color-text);
+            background: var(--color-background);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             z-index: 10000;
+            overflow-y: auto;
+            padding: 40px 20px;
         }
 
         .login-gate.hidden {
@@ -1195,11 +1465,36 @@
 
     <!-- Login Gate (shown when not logged in) -->
     <div class="login-gate" id="loginGate">
-        <div class="login-box">
-            
-            <h1>Welcome to NarraWay</h1>
-            <p>Please log in to access your journey mapping experience.</p>
-            <div class="login-buttons">
+        <div class="home-container">
+            <img src="" id="homeLogo" class="home-logo" alt="NarraWay">
+
+            <h2 class="home-subtitle">Narrative-Based Strengths Discovery</h2>
+            <p class="home-description">
+                A narrative-driven experience where you map the strengths you already have to the challenges ahead.
+                For individuals navigating transition and teams aligning around what they do best.
+            </p>
+
+            <!-- Video Carousel -->
+            <div class="video-carousel">
+                <div class="carousel-main">
+                    <div class="carousel-video-container" id="carouselVideoContainer">
+                        <iframe
+                            id="carouselVideo"
+                            src="https://iframe.mediadelivery.net/embed/588279/c1a47eb6-ddb3-43ea-8eed-2416323d2687?autoplay=false&preload=true"
+                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <h3 class="carousel-video-title" id="carouselVideoTitle">What is NarraWay?</h3>
+                </div>
+                <div class="carousel-nav">
+                    <button class="carousel-dot active" data-video-index="0" onclick="switchCarouselVideo(0)">What is NarraWay?</button>
+                    <button class="carousel-dot" data-video-index="1" onclick="switchCarouselVideo(1)">What are Strengths?</button>
+                    <button class="carousel-dot" data-video-index="2" onclick="switchCarouselVideo(2)">Navigating Life's Journeys</button>
+                </div>
+            </div>
+
+            <div class="home-buttons">
                 <button class="btn btn-primary" id="loginBtn">Log In</button>
                 <button class="btn btn-secondary" id="signupBtn">Sign Up</button>
             </div>
@@ -1255,19 +1550,94 @@
                 </div>
             </div>
 
-            <!-- Video Panel Step 1 -->
-            <div class="video-panel">
-                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+            <!-- Video Section Step 1 -->
+            <div class="multi-video-section">
+                <div class="multi-video-header collapsed" onclick="toggleMultiVideoSection(this)">
                     <span class="toggle-icon">▶</span>
-                    <span class="video-icon">🎬</span>
-                    <span>Watch: How to Choose Your Equipment</span>
-                </button>
-                <div class="video-content" id="videoContent1">
-                    <div class="video-wrapper">
-                        <!-- Replace data-video-url with your Vimeo/YouTube embed URL -->
-                        <div class="video-placeholder" data-video-url="">
-                            <span class="placeholder-icon">🎥</span>
-                            <span class="placeholder-text">Video coming soon</span>
+                    <span>🎬</span>
+                    <span>Watch: Video Guides for Step 1</span>
+                </div>
+                <div class="multi-video-content" id="videoContent1">
+                    <div class="video-list">
+                        <div class="video-group-label">Introduction</div>
+
+                        <div class="video-item" data-video-id="463cc6ca-c37b-4a0c-abe4-3cd501f48733">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">🎯</span>
+                                <span class="video-item-title">What are Strengths?</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="c4690df0-f365-4508-b58e-fa470cd91009">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">📋</span>
+                                <span class="video-item-title">Step 1 Overview</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-group-label">5 Tips for Finding Your Strengths</div>
+
+                        <div class="video-item" data-video-id="7176e51d-2ba2-49e3-9926-f0f283f520ed">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">1️⃣</span>
+                                <span class="video-item-title">Tip 1</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="121ad196-db11-4be7-9045-80f103cd054b">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">2️⃣</span>
+                                <span class="video-item-title">Tip 2</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="5aac7973-3afc-44c1-a136-305cec77e5c5">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">3️⃣</span>
+                                <span class="video-item-title">Tip 3</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="c2759527-2c8f-4b65-9c85-cc65f02094ba">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">4️⃣</span>
+                                <span class="video-item-title">Tip 4</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="a81023ba-4395-4640-9f3f-2b56a92c736b">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">5️⃣</span>
+                                <span class="video-item-title">Tip 5</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1319,18 +1689,35 @@
                 </div>
             </div>
 
-            <!-- Video Panel Step 2 -->
-            <div class="video-panel">
-                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+            <!-- Video Section Step 2 -->
+            <div class="multi-video-section">
+                <div class="multi-video-header collapsed" onclick="toggleMultiVideoSection(this)">
                     <span class="toggle-icon">▶</span>
-                    <span class="video-icon">🎬</span>
-                    <span>Watch: How to Map Your Journey</span>
-                </button>
-                <div class="video-content" id="videoContent2">
-                    <div class="video-wrapper">
-                        <div class="video-placeholder" data-video-url="">
-                            <span class="placeholder-icon">🎥</span>
-                            <span class="placeholder-text">Video coming soon</span>
+                    <span>🎬</span>
+                    <span>Watch: Video Guides for Step 2</span>
+                </div>
+                <div class="multi-video-content" id="videoContent2">
+                    <div class="video-list">
+                        <div class="video-item" data-video-id="6f4d4029-7cba-4ab4-a902-27cbf9520487">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">🧭</span>
+                                <span class="video-item-title">Navigating Life's Journeys</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+
+                        <div class="video-item" data-video-id="26bf3888-4449-469b-a1b7-6a5145dfa13f">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">🗺️</span>
+                                <span class="video-item-title">Mapping Your Journey</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1403,18 +1790,24 @@
                 </div>
             </div>
 
-            <!-- Video Panel Step 3 -->
-            <div class="video-panel">
-                <button class="video-toggle" onclick="toggleVideo(this)" aria-expanded="false">
+            <!-- Video Section Step 3 -->
+            <div class="multi-video-section">
+                <div class="multi-video-header collapsed" onclick="toggleMultiVideoSection(this)">
                     <span class="toggle-icon">▶</span>
-                    <span class="video-icon">🎬</span>
-                    <span>Watch: How to Apply Your Strengths</span>
-                </button>
-                <div class="video-content" id="videoContent3">
-                    <div class="video-wrapper">
-                        <div class="video-placeholder" data-video-url="">
-                            <span class="placeholder-icon">🎥</span>
-                            <span class="placeholder-text">Video coming soon</span>
+                    <span>🎬</span>
+                    <span>Watch: Video Guide for Step 3</span>
+                </div>
+                <div class="multi-video-content" id="videoContent3">
+                    <div class="video-list">
+                        <div class="video-item" data-video-id="90091a6e-ac39-4529-9d3b-aec7165e7341">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">⚔️</span>
+                                <span class="video-item-title">Strengths Based Navigation</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1464,6 +1857,29 @@
                 </div>
                 <div class="instructions">
                     <p>Congratulations on completing your Journey Map! You can now export your work to keep as a reminder of your strengths and the path ahead.</p>
+                </div>
+            </div>
+
+            <!-- Video Section Step 4 -->
+            <div class="multi-video-section">
+                <div class="multi-video-header collapsed" onclick="toggleMultiVideoSection(this)">
+                    <span class="toggle-icon">▶</span>
+                    <span>🎬</span>
+                    <span>Watch: Video Guide for Step 4</span>
+                </div>
+                <div class="multi-video-content" id="videoContent4">
+                    <div class="video-list">
+                        <div class="video-item" data-video-id="c601824d-642e-4f06-bc6c-384014927fd4">
+                            <div class="video-item-header" onclick="toggleVideoItem(this)">
+                                <span class="video-item-icon">🚀</span>
+                                <span class="video-item-title">Starting Your Journey</span>
+                                <span class="video-item-toggle">▶</span>
+                            </div>
+                            <div class="video-item-player">
+                                <div class="video-wrapper"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1656,6 +2072,9 @@
             // Set logos
             $('headerLogo').src = LOGOS.whiteText;
             $('modalLogo').src = LOGOS.transparent;
+            // Set home page logo (if element exists)
+            const homeLogo = $('homeLogo');
+            if (homeLogo) homeLogo.src = LOGOS.transparent;
 
             // Render equipment gallery
             renderEquipmentGallery();
@@ -2204,6 +2623,80 @@ Created with NarraWay`;
             }
         }
 
+        // ========== HOME PAGE CAROUSEL ==========
+        const carouselVideos = [
+            {
+                id: 'c1a47eb6-ddb3-43ea-8eed-2416323d2687',
+                title: 'What is NarraWay?'
+            },
+            {
+                id: '463cc6ca-c37b-4a0c-abe4-3cd501f48733',
+                title: 'What are Strengths?'
+            },
+            {
+                id: '6f4d4029-7cba-4ab4-a902-27cbf9520487',
+                title: 'Navigating Life\'s Journeys'
+            }
+        ];
+
+        function switchCarouselVideo(index) {
+            const video = carouselVideos[index];
+            const iframe = document.getElementById('carouselVideo');
+            const title = document.getElementById('carouselVideoTitle');
+            const dots = document.querySelectorAll('.carousel-dot');
+
+            // Update iframe src
+            iframe.src = `https://iframe.mediadelivery.net/embed/588279/${video.id}?autoplay=false&preload=true`;
+
+            // Update title
+            title.textContent = video.title;
+
+            // Update active dot
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // ========== MULTI-VIDEO SECTION TOGGLE ==========
+        function toggleMultiVideoSection(header) {
+            const isExpanded = header.classList.toggle('expanded');
+            header.classList.toggle('collapsed', !isExpanded);
+            const content = header.nextElementSibling;
+            content.classList.toggle('expanded', isExpanded);
+        }
+
+        function toggleVideoItem(header) {
+            const item = header.parentElement;
+            const wasPlaying = item.classList.contains('playing');
+
+            // Close all other video items in the same section
+            const section = item.closest('.video-list');
+            section.querySelectorAll('.video-item.playing').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('playing');
+                    // Clear iframe to stop video
+                    const otherPlayer = otherItem.querySelector('.video-item-player');
+                    const otherIframe = otherPlayer.querySelector('iframe');
+                    if (otherIframe) {
+                        otherIframe.src = otherIframe.src; // Reset to stop
+                    }
+                }
+            });
+
+            // Toggle current item
+            item.classList.toggle('playing', !wasPlaying);
+
+            // If opening, ensure iframe is loaded
+            if (!wasPlaying) {
+                const player = item.querySelector('.video-item-player');
+                const wrapper = player.querySelector('.video-wrapper');
+                const videoId = item.getAttribute('data-video-id');
+                if (videoId && wrapper && !wrapper.querySelector('iframe')) {
+                    wrapper.innerHTML = `<iframe src="https://iframe.mediadelivery.net/embed/588279/${videoId}?autoplay=false&preload=true" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+                }
+            }
+        }
+
         // ========== NAVIGATION ==========
         function goToStep(step) {
             // Validate forward navigation
@@ -2618,11 +3111,14 @@ Created with NarraWay`;
             });
         });
 
-        // Signup button click handler
+        // Signup button click handler - opens signup then redirects to Stripe checkout
         document.getElementById('signupBtn').addEventListener('click', function() {
             memberstack.openModal('SIGNUP').then(({ data, type }) => {
                 if (data && data.member) {
-                    window.location.reload();
+                    // After signup, redirect to Stripe checkout for payment
+                    memberstack.purchasePlansWithCheckout({
+                        priceId: 'prc_lifetime-access-q013t0w6h'
+                    });
                 }
             });
         });
