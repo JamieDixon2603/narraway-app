@@ -9,7 +9,7 @@
     <script>
         const SUPABASE_URL = 'https://kttkvmpmxpcjtpkgnkrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_xzBItzTd25jdDL5w7bC8-Q_xZ35H_MG';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2931,17 +2931,6 @@ Created with NarraWay`;
     </script>
     </div><!-- End app-content -->
     <script>
-        const memberstack = window.$memberstackDom;
-
-        // Listen for member logged in event - handles redirect after signup
-        memberstack.onMemberLoaded((member) => {
-            if (member && member.data) {
-                console.log('Member loaded:', member.data.auth.email);
-                // Reload to trigger the payment check
-                window.location.reload();
-            }
-        });
-
         // ========== CLOUD SAVE FUNCTIONALITY ==========
         const MAX_JOURNEYS = 5;
         let currentJourneyId = null;
@@ -3331,13 +3320,13 @@ Created with NarraWay`;
 
             try {
                 if (isLoginMode) {
-                    const { data, error } = await supabase.auth.signInWithPassword({
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
                         email: email,
                         password: password
                     });
                     if (error) throw error;
                 } else {
-                    const { data, error } = await supabase.auth.signUp({
+                    const { data, error } = await supabaseClient.auth.signUp({
                         email: email,
                         password: password
                     });
@@ -3368,7 +3357,7 @@ Created with NarraWay`;
 
         // Logout button click handler
         document.getElementById('logoutBtn').addEventListener('click', async function() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             window.location.reload();
         });
 
@@ -3390,7 +3379,7 @@ Created with NarraWay`;
         // Redirect to Stripe checkout
         async function redirectToCheckout() {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session } } = await supabaseClient.auth.getSession();
                 if (!session) {
                     console.error('No session for checkout');
                     return;
@@ -3419,7 +3408,7 @@ Created with NarraWay`;
             const loginGate = document.getElementById('loginGate');
             const appContent = document.getElementById('appContent');
 
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
 
             if (session && session.user) {
                 currentUser = session.user;
@@ -3448,7 +3437,7 @@ Created with NarraWay`;
         }
 
         // Listen for auth state changes
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 checkAuthAndPayment();
             }
