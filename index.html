@@ -3365,18 +3365,19 @@ Created with NarraWay`;
         async function checkPaymentStatus(userId) {
             console.log('Checking payment status for user:', userId);
             const { data, error } = await supabaseClient
-                .from('user_profiles')
-                .select('has_paid')
+                .from('users')
+                .select('subscription_status')
                 .eq('id', userId)
                 .single();
 
             if (error) {
                 console.error('Error checking payment:', error);
-                // If no profile exists yet, user hasn't paid
+                // If no user record exists yet, user hasn't paid
                 return false;
             }
             console.log('Payment status data:', data);
-            return data?.has_paid || false;
+            // User has paid if subscription_status is 'active'
+            return data?.subscription_status === 'active';
         }
 
         // Redirect to Stripe checkout
