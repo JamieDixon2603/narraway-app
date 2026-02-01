@@ -3388,6 +3388,7 @@ Created with NarraWay`;
                     return;
                 }
 
+                console.log('Calling create-checkout function...');
                 const response = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
                     method: 'POST',
                     headers: {
@@ -3396,13 +3397,24 @@ Created with NarraWay`;
                     }
                 });
 
+                console.log('Checkout response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Checkout response error:', errorText);
+                    throw new Error(`Checkout failed: ${response.status}`);
+                }
+
                 const { url, error } = await response.json();
+                console.log('Checkout URL:', url, 'Error:', error);
+
                 if (error) throw new Error(error);
+                if (!url) throw new Error('No checkout URL returned');
 
                 window.location.href = url;
             } catch (error) {
                 console.error('Checkout error:', error);
-                alert('Failed to start checkout. Please try again.');
+                alert('Failed to start checkout. Please try again. Error: ' + error.message);
             }
         }
 
