@@ -3363,7 +3363,8 @@ Created with NarraWay`;
 
         // Check user payment status from Supabase
         async function checkPaymentStatus(userId) {
-            const { data, error } = await supabase
+            console.log('Checking payment status for user:', userId);
+            const { data, error } = await supabaseClient
                 .from('user_profiles')
                 .select('has_paid')
                 .eq('id', userId)
@@ -3371,8 +3372,10 @@ Created with NarraWay`;
 
             if (error) {
                 console.error('Error checking payment:', error);
+                // If no profile exists yet, user hasn't paid
                 return false;
             }
+            console.log('Payment status data:', data);
             return data?.has_paid || false;
         }
 
