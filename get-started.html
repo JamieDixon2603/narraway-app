@@ -3473,6 +3473,7 @@ Created with NarraWay`;
         // Redirect to Stripe checkout
         async function redirectToCheckout() {
             try {
+                await supabaseClient.auth.refreshSession();
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (!session) {
                     console.error('No session for checkout');
