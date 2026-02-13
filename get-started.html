@@ -2984,7 +2984,7 @@ Created with NarraWay`;
                     const { error } = await supabaseClient
                         .from('journeys')
                         .update({
-                            journey_data: stateData,
+                            data: stateData,
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', currentJourneyId)
@@ -3002,7 +3002,7 @@ Created with NarraWay`;
                         .insert({
                             user_id: currentUser.id,
                             name: autosaveJourneyName,
-                            journey_data: stateData
+                            data: stateData
                         })
                         .select()
                         .single();
@@ -3191,7 +3191,7 @@ Created with NarraWay`;
                     id: j.id,
                     name: j.name,
                     lastModified: j.updated_at,
-                    data: j.journey_data
+                    data: j.data
                 }));
                 renderJourneysList();
             } catch (error) {
@@ -3253,7 +3253,7 @@ Created with NarraWay`;
                         .from('journeys')
                         .update({
                             name: name,
-                            journey_data: stateData,
+                            data: stateData,
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', existingId)
@@ -3274,7 +3274,7 @@ Created with NarraWay`;
                         .insert({
                             user_id: currentUser.id,
                             name: name,
-                            journey_data: stateData
+                            data: stateData
                         })
                         .select()
                         .single();

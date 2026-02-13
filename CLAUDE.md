@@ -21,7 +21,7 @@ NarraWay is a coaching journey-builder app where users create visual journey map
 - `id` (UUID)
 - `user_id` (FK to users)
 - `name` (journey name)
-- `journey_data` (JSONB — stores full journey state: currentStep, selectedEquipment, mapCols/Rows, placedTerrain, terrainBuffer, terrainUsage, placedEquipment, notes)
+- `data` (JSONB — stores full journey state: currentStep, selectedEquipment, mapCols/Rows, placedTerrain, terrainBuffer, terrainUsage, placedEquipment, notes)
 - `updated_at`
 
 ## Current Auth/Access Model
