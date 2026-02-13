@@ -3000,6 +3000,7 @@ Created with NarraWay`;
                     const { data, error } = await supabaseClient
                         .from('journeys')
                         .insert({
+                            id: generateId(),
                             user_id: currentUser.id,
                             name: autosaveJourneyName,
                             data: stateData
@@ -3272,6 +3273,7 @@ Created with NarraWay`;
                     const { data, error } = await supabaseClient
                         .from('journeys')
                         .insert({
+                            id: generateId(),
                             user_id: currentUser.id,
                             name: name,
                             data: stateData
