@@ -1546,7 +1546,7 @@
     <!-- Login Gate (shown when not logged in) -->
     <div class="login-gate" id="loginGate">
         <div class="home-container">
-            <a href="/"><img src="" id="homeLogo" class="home-logo" alt="NarraWay"></a>
+            <a href="https://narraway.co.uk"><img src="Assets/Logos/NarraWay Logo Transparent.png" id="homeLogo" class="home-logo" alt="NarraWay"></a>
 
             <h2 class="home-subtitle">Narrative-Based Strengths Discovery</h2>
             <p class="home-description">
@@ -1619,7 +1619,7 @@
     <div class="app-content hidden" id="appContent">
     <!-- Header -->
     <header class="header">
-        <a href="/" class="header-logo-link"><img src="" id="headerLogo" class="header-logo" alt="NarraWay"></a>
+        <a href="https://narraway.co.uk" class="header-logo-link"><img src="" id="headerLogo" class="header-logo" alt="NarraWay"></a>
         <div class="step-indicators">
             <!-- Save Journey Button -->
             <button class="btn btn-primary journeys-btn" id="saveJourneyBtn" style="background: var(--color-primary); color: var(--color-text);">💾 Save</button>
@@ -2070,11 +2070,22 @@
 
     <!-- Journey Name Modal (shown after welcome modal) -->
     <div class="modal-overlay hidden" id="journeyNameModal">
-        <div class="modal" style="text-align: center;">
-            <h2 style="margin-bottom: 8px;">Name Your Journey</h2>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 16px;">Give your journey a name. Your progress will be saved automatically as you go.</p>
-            <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 16px;">
-            <button class="btn btn-primary" id="confirmJourneyName" style="width: 100%;">START</button>
+        <div class="modal" style="text-align: center; max-width: 420px;">
+            <!-- New Journey Section -->
+            <h2 style="margin-bottom: 8px;">Start New Journey</h2>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">Give your journey a name. Your progress will be saved automatically.</p>
+            <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 12px;">
+            <button class="btn btn-primary" id="confirmJourneyName" style="width: 100%;">START NEW JOURNEY</button>
+
+            <!-- Load Saved Journey Section (only shown if saved journeys exist) -->
+            <div id="loadSavedSection" style="display: none;">
+                <div style="margin: 20px 0 12px; display: flex; align-items: center; gap: 12px;">
+                    <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                    <span style="font-size: 0.8rem; color: #999; white-space: nowrap;">or continue a saved journey</span>
+                    <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                </div>
+                <div id="savedJourneysList" style="text-align: left; max-height: 180px; overflow-y: auto;"></div>
+            </div>
         </div>
     </div>
 
@@ -3021,12 +3032,31 @@ Created with NarraWay`;
 
         // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
-            // Welcome modal — create journey with name and begin
+            // Welcome modal — show journey name/load modal
             $('beginJourney').onclick = () => {
                 $('welcomeModal').classList.add('hidden');
                 // Show journey name modal
                 const nameInput = document.getElementById('welcomeJourneyName');
                 if (nameInput) nameInput.value = getDefaultJourneyName();
+
+                // Populate saved journeys list if any exist
+                const loadSection = document.getElementById('loadSavedSection');
+                const savedList = document.getElementById('savedJourneysList');
+                if (savedJourneys.length > 0) {
+                    loadSection.style.display = 'block';
+                    savedList.innerHTML = savedJourneys.map(j => `
+                        <div onclick="loadJourneyFromModal('${j.id}')" style="padding: 10px 12px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background='white'">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--color-text);">${escapeHtml(j.name)}</div>
+                                <div style="font-size: 0.75rem; color: #888;">${new Date(j.lastModified).toLocaleDateString()}</div>
+                            </div>
+                            <span style="color: var(--color-primary); font-size: 0.8rem;">Load →</span>
+                        </div>
+                    `).join('');
+                } else {
+                    loadSection.style.display = 'none';
+                }
+
                 $('journeyNameModal').classList.remove('hidden');
                 nameInput.focus();
                 nameInput.select();
@@ -3304,6 +3334,12 @@ Created with NarraWay`;
                 loadStateData(journey.data);
                 closeJourneysMenu();
             }
+        }
+
+        // Load journey from the start modal
+        function loadJourneyFromModal(id) {
+            document.getElementById('journeyNameModal').classList.add('hidden');
+            loadJourney(id);
         }
 
         // Delete a journey from Supabase
