@@ -107,21 +107,34 @@ Three-tier pricing to support individual, coached, and team use cases.
 _Ask Claude to update this section at regular intervals during chats._
 
 ### Session — 13 Feb 2025
-**Tester feedback & UX improvements:**
-- Fixed critical save bug: all journey CRUD functions used wrong variable (`supabase` vs `supabaseClient`)
-- Redesigned header: separated Save/Load into distinct buttons (💾 Save + 📂 Load ▼ dropdown)
-- Added save prompt panel on Step 4 (green highlight, prominent save button)
-- Logo now links to landing page in both `get-started.html` and `index.html`
-- Added smooth scroll-to-top on step transitions
-- Fixed blue italic text in Step 2 instructions — now bold italic in regular text colour (was being mistaken for hyperlinks)
-- Added `beforeunload` warning to prevent accidental navigation away from unsaved work
+**Save system — bug fixes & improvements:**
+- Fixed critical save bug: journey CRUD functions used wrong Supabase variable (`supabase` vs `supabaseClient`)
+- Fixed column name mismatch: code used `journey_data` but Supabase table column is `data`
+- Fixed null ID error: `journeys.id` is type `text` with no auto-default — now generates ID via `generateId()`
+- Added `refreshSession()` before saves to prevent stale JWT errors (same pattern as checkout fix from 12 Feb)
+- Save error messages now show actual Supabase error detail for easier debugging
+
+**Header & Save/Load UI redesign:**
+- Separated into distinct 💾 Save button (golden, prominent) + 📂 Load ▼ dropdown
+- Save button opens name modal; Load dropdown shows saved journeys + New Journey option
+- All logo links now point to `https://narraway.co.uk` (not `/` which goes to app)
 
 **Autosave feature:**
-- Welcome modal now includes journey name input (defaults to "My Journey 01" etc.)
-- Journey created in database immediately on "BEGIN YOUR JOURNEY" click
+- Two-modal flow: Welcome modal → separate "Name Your Journey" modal (with default "My Journey 01" etc.)
+- Journey name modal also shows saved journeys to load ("Continue a Journey" section shown first, equally prominent)
+- Journey created in database immediately on START NEW JOURNEY click
 - Autosave triggers on every step transition (silent, with "✓ Saved" indicator in header)
 - Manual save and autosave stay in sync (shared journey ID)
 - New Journey flow properly resets autosave state
+- Max 5 journeys per user (enforced in code via `MAX_JOURNEYS` constant)
+
+**UX improvements from tester feedback:**
+- Added save prompt panel on Step 4 (green highlight, prominent save button)
+- Added smooth scroll-to-top on step transitions
+- Fixed blue italic text in Step 2 instructions — now bold italic in regular text colour (was mistaken for hyperlinks)
+- Added `beforeunload` warning to prevent accidental navigation away from unsaved work
+- Landing page logo loads from PNG file directly instead of waiting for base64 JavaScript (faster load)
+- Fixed equipment counter not updating on journey load (`updateEquipmentCounter` + `updateContinueButton` now called in `loadStateData`)
 
 **Map resize tile preservation:**
 - Added `terrainBuffer` to state — tiles hidden by downsizing are preserved, not deleted
@@ -138,6 +151,7 @@ _Ask Claude to update this section at regular intervals during chats._
 - Tiered pricing discussed: Individual £100 / Coached £50 / Team £200
 - Presentation/facilitation mode — parked as future Team tier feature (not real-time multiplayer, just optimised screen-sharing layout with numbered cards)
 - Testimonials section on landing page — parked until content available
+- `last_seen` tracking on users table — discussed, Option 2 (add column + update on login) recommended but not yet implemented
 
 ### Session — 10 Feb 2025
 - Discussed coach licensing business model (3 options: full portal, simple discount link, hybrid)
