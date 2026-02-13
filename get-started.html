@@ -1546,7 +1546,7 @@
     <!-- Login Gate (shown when not logged in) -->
     <div class="login-gate" id="loginGate">
         <div class="home-container">
-            <img src="" id="homeLogo" class="home-logo" alt="NarraWay">
+            <a href="/"><img src="" id="homeLogo" class="home-logo" alt="NarraWay"></a>
 
             <h2 class="home-subtitle">Narrative-Based Strengths Discovery</h2>
             <p class="home-description">
@@ -2064,12 +2064,17 @@
                 <li><span class="step-num">3</span><div><span class="step-name">Apply Your Strengths</span> - Place your equipment where it will help most</div></li>
                 <li><span class="step-num">4</span><div><span class="step-name">Export</span> - Save your completed Journey Map</div></li>
             </ol>
-            <div style="margin: 16px 0;">
-                <label style="font-family: var(--font-heading); font-size: 0.9rem; color: var(--color-text); display: block; margin-bottom: 6px;">Name your journey:</label>
-                <input type="text" id="welcomeJourneyName" placeholder="My Journey" maxlength="50" style="width: 100%; padding: 10px 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box;">
-            </div>
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 12px;">Your progress will be saved automatically as you go.</p>
             <button class="btn btn-primary" id="beginJourney">BEGIN YOUR JOURNEY</button>
+        </div>
+    </div>
+
+    <!-- Journey Name Modal (shown after welcome modal) -->
+    <div class="modal-overlay hidden" id="journeyNameModal">
+        <div class="modal" style="text-align: center;">
+            <h2 style="margin-bottom: 8px;">Name Your Journey</h2>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 16px;">Give your journey a name. Your progress will be saved automatically as you go.</p>
+            <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 16px;">
+            <button class="btn btn-primary" id="confirmJourneyName" style="width: 100%;">START</button>
         </div>
     </div>
 
@@ -2941,9 +2946,6 @@ Created with NarraWay`;
             updateContinueButton();
             
             goToStep(1);
-            // Pre-fill journey name with default
-            const welcomeNameInput = document.getElementById('welcomeJourneyName');
-            if (welcomeNameInput) welcomeNameInput.value = getDefaultJourneyName();
             $('welcomeModal').classList.remove('hidden');
             $('confirmModal').classList.add('hidden');
         }
@@ -2973,6 +2975,8 @@ Created with NarraWay`;
 
             try {
                 showAutosaveIndicator('Saving...');
+                // Refresh session to ensure valid JWT
+                await supabaseClient.auth.refreshSession();
                 const stateData = getCurrentStateData();
 
                 if (currentJourneyId) {
@@ -3017,14 +3021,31 @@ Created with NarraWay`;
         // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
             // Welcome modal — create journey with name and begin
-            $('beginJourney').onclick = async () => {
+            $('beginJourney').onclick = () => {
+                $('welcomeModal').classList.add('hidden');
+                // Show journey name modal
+                const nameInput = document.getElementById('welcomeJourneyName');
+                if (nameInput) nameInput.value = getDefaultJourneyName();
+                $('journeyNameModal').classList.remove('hidden');
+                nameInput.focus();
+                nameInput.select();
+            };
+
+            $('confirmJourneyName').onclick = async () => {
                 const nameInput = document.getElementById('welcomeJourneyName');
                 const name = (nameInput && nameInput.value.trim()) || getDefaultJourneyName();
                 autosaveJourneyName = name;
-                $('welcomeModal').classList.add('hidden');
+                $('journeyNameModal').classList.add('hidden');
                 // Trigger first autosave to create the journey in the database
                 await autosave();
             };
+
+            // Allow Enter key to confirm journey name
+            document.getElementById('welcomeJourneyName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('confirmJourneyName').click();
+                }
+            });
             
             // Navigation
             $('continueToStep2').onclick = () => goToStep(2);
@@ -3221,6 +3242,9 @@ Created with NarraWay`;
             }
 
             try {
+                // Refresh session before saving to ensure valid JWT
+                await supabaseClient.auth.refreshSession();
+
                 const stateData = getCurrentStateData();
 
                 if (existingId) {
@@ -3263,7 +3287,8 @@ Created with NarraWay`;
                 return true;
             } catch (error) {
                 console.error('Error saving journey:', error);
-                alert('Failed to save journey. Please try again.');
+                const detail = error?.message || error?.details || error?.hint || JSON.stringify(error);
+                alert('Failed to save journey: ' + detail);
                 return false;
             }
         }
@@ -3311,10 +3336,6 @@ Created with NarraWay`;
                 autosaveJourneyName = null;
                 resetJourney();
                 closeJourneysMenu();
-                // Show welcome modal so they can name the new journey
-                const nameInput = document.getElementById('welcomeJourneyName');
-                if (nameInput) nameInput.value = '';
-                $('welcomeModal').classList.remove('hidden');
             }
         }
 
