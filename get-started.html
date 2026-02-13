@@ -160,6 +160,11 @@
             width: auto;
         }
 
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+        }
+
         .step-indicators {
             display: flex;
             gap: 12px;
@@ -438,7 +443,8 @@
 
         .instructions em {
             font-style: italic;
-            color: var(--color-accent);
+            font-weight: 600;
+            color: var(--color-text);
         }
 
         .instructions ol {
@@ -1613,23 +1619,25 @@
     <div class="app-content hidden" id="appContent">
     <!-- Header -->
     <header class="header">
-        <img src="" id="headerLogo" class="header-logo" alt="NarraWay">
+        <a href="/" class="header-logo-link"><img src="" id="headerLogo" class="header-logo" alt="NarraWay"></a>
         <div class="step-indicators">
-            <!-- My Journeys Dropdown -->
+            <!-- Save Journey Button -->
+            <button class="btn btn-primary journeys-btn" id="saveJourneyBtn" style="background: var(--color-primary); color: var(--color-text);">💾 Save</button>
+            <!-- Load Journey Dropdown -->
             <div class="journeys-dropdown" id="journeysDropdown">
-                <button class="btn btn-primary journeys-btn" id="journeysBtn">
-                    My Journeys ▼
+                <button class="btn btn-secondary journeys-btn" id="journeysBtn">
+                    📂 Load ▼
                 </button>
                 <div class="journeys-menu" id="journeysMenu">
                     <div class="journeys-list" id="journeysList">
                         <!-- Saved journeys will be populated here -->
                     </div>
                     <div class="journeys-actions">
-                        <button class="journey-action-btn" id="saveJourneyBtn">💾 Save Current</button>
                         <button class="journey-action-btn" id="newJourneyBtn">✨ New Journey</button>
                     </div>
                 </div>
             </div>
+            <span id="autosaveIndicator" style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-right: 8px; transition: opacity 0.3s; display: none;"></span>
             <button class="btn btn-secondary" id="changePasswordBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 8px;">Change Password</button>
             <button class="btn btn-secondary" id="logoutBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 16px;">Log Out</button>
             <button class="step-dot active" data-step="1" id="stepDot1">1</button>
@@ -1965,7 +1973,20 @@
                     <h2 class="panel-title">Step 4: Export Your Journey Map</h2>
                 </div>
                 <div class="instructions">
-                    <p>Congratulations on completing your Journey Map! You can now export your work to keep as a reminder of your strengths and the path ahead.</p>
+                    <p>Congratulations on completing your Journey Map! You can now save and export your work to keep as a reminder of your strengths and the path ahead.</p>
+                </div>
+            </div>
+
+            <!-- Save Reminder Panel -->
+            <div class="panel" style="background: linear-gradient(135deg, #f0f7e6 0%, #e8f5d4 100%); border: 2px solid var(--color-tertiary-light);">
+                <div class="panel-header">
+                    <span class="panel-icon">💾</span>
+                    <span class="panel-title">Save Your Journey</span>
+                </div>
+                <div style="padding: 8px 0;">
+                    <p style="margin-bottom: 12px;">Don't lose your work! Save your journey to the cloud so you can come back to it anytime.</p>
+                    <button class="btn btn-primary" id="saveFromStep4" style="font-size: 1rem;">💾 SAVE JOURNEY</button>
+                    <span id="step4SaveConfirm" style="display: none; margin-left: 12px; color: var(--color-tertiary-dark); font-weight: 600;">✓ Saved!</span>
                 </div>
             </div>
 
@@ -2043,6 +2064,11 @@
                 <li><span class="step-num">3</span><div><span class="step-name">Apply Your Strengths</span> - Place your equipment where it will help most</div></li>
                 <li><span class="step-num">4</span><div><span class="step-name">Export</span> - Save your completed Journey Map</div></li>
             </ol>
+            <div style="margin: 16px 0;">
+                <label style="font-family: var(--font-heading); font-size: 0.9rem; color: var(--color-text); display: block; margin-bottom: 6px;">Name your journey:</label>
+                <input type="text" id="welcomeJourneyName" placeholder="My Journey" maxlength="50" style="width: 100%; padding: 10px 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box;">
+            </div>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 12px;">Your progress will be saved automatically as you go.</p>
             <button class="btn btn-primary" id="beginJourney">BEGIN YOUR JOURNEY</button>
         </div>
     </div>
@@ -2164,6 +2190,7 @@
             mapCols: 4,
             mapRows: 3,
             placedTerrain: {}, // "row-col" -> terrainKey
+            terrainBuffer: {}, // "row-col" -> terrainKey (tiles hidden by downsizing, restored on upsize)
             terrainUsage: {}, // terrainKey -> count used
             placedEquipment: {}, // "cellIdx-slotIdx" -> equipmentKey
         };
@@ -2293,9 +2320,10 @@
             const counter = $('terrainCounter');
             const total = state.mapCols * state.mapRows;
             const filled = Object.keys(state.placedTerrain).length;
+            const bufferedCount = Object.keys(state.terrainBuffer).length;
             counter.textContent = `Tiles Placed: ${filled} / ${total}`;
             counter.className = 'counter-badge ' + (filled === total ? 'valid' : 'invalid');
-            
+
             const validation = $('mapValidation');
             if (filled === total) {
                 validation.textContent = `All tiles filled! (${filled}/${total})`;
@@ -2303,6 +2331,20 @@
             } else {
                 validation.textContent = `Please fill all map tiles (${filled}/${total} filled)`;
                 validation.className = 'validation-msg';
+            }
+
+            // Show buffer notice if tiles are held from a previous larger map size
+            let bufferNotice = document.getElementById('bufferNotice');
+            if (bufferedCount > 0) {
+                if (!bufferNotice) {
+                    bufferNotice = document.createElement('div');
+                    bufferNotice.id = 'bufferNotice';
+                    bufferNotice.style.cssText = 'font-size: 0.8rem; color: var(--color-accent); margin-top: 6px; padding: 6px 10px; background: rgba(45,122,140,0.08); border-radius: 6px;';
+                    validation.parentNode.insertBefore(bufferNotice, validation.nextSibling);
+                }
+                bufferNotice.textContent = `${bufferedCount} tile${bufferedCount > 1 ? 's' : ''} saved from a larger map size. Resize back up to restore.`;
+            } else if (bufferNotice) {
+                bufferNotice.remove();
             }
             
             $('continueToStep3').disabled = filled !== total;
@@ -2400,24 +2442,36 @@
         }
 
         function changeMapSize(cols, rows) {
-            // Preserve terrain that fits in new size
             const newPlaced = {};
+
+            // Move out-of-bounds tiles from map to buffer
+            // Buffered tiles STILL count against usage limits (they're reserved)
             Object.entries(state.placedTerrain).forEach(([key, terrain]) => {
                 const [row, col] = key.split('-').map(Number);
                 if (row < rows && col < cols) {
                     newPlaced[key] = terrain;
                 } else {
-                    // Return terrain to gallery
-                    state.terrainUsage[terrain]--;
+                    // Buffer the tile — usage count stays the same (tile is reserved)
+                    state.terrainBuffer[key] = terrain;
                 }
             });
-            
+
+            // Restore any buffered tiles that now fit in the new size
+            Object.entries(state.terrainBuffer).forEach(([key, terrain]) => {
+                const [row, col] = key.split('-').map(Number);
+                if (row < rows && col < cols && !newPlaced[key]) {
+                    newPlaced[key] = terrain;
+                    delete state.terrainBuffer[key];
+                }
+            });
+
             state.placedTerrain = newPlaced;
             state.mapCols = cols;
             state.mapRows = rows;
-            
+
             renderTerrainGallery();
             renderMap();
+            updateTerrainCounter();
         }
 
         // ========== STEP 3: STRATEGY MAP ==========
@@ -2817,7 +2871,10 @@ Created with NarraWay`;
                     if (filled < total) return;
                 }
             }
-            
+
+            // Scroll to top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             // Update step
             state.currentStep = step;
             
@@ -2850,6 +2907,11 @@ Created with NarraWay`;
             if (step === 4) {
                 renderExportPreview();
             }
+
+            // Autosave on step completion (when moving forward)
+            if (autosaveJourneyName && currentUser) {
+                autosave();
+            }
         }
 
         function resetJourney() {
@@ -2857,6 +2919,7 @@ Created with NarraWay`;
             state.mapCols = 4;
             state.mapRows = 3;
             state.placedTerrain = {};
+            state.terrainBuffer = {};
             state.placedEquipment = {};
             Object.keys(TERRAIN_CARDS).forEach(key => {
                 state.terrainUsage[key] = 0;
@@ -2878,14 +2941,90 @@ Created with NarraWay`;
             updateContinueButton();
             
             goToStep(1);
+            // Pre-fill journey name with default
+            const welcomeNameInput = document.getElementById('welcomeJourneyName');
+            if (welcomeNameInput) welcomeNameInput.value = getDefaultJourneyName();
             $('welcomeModal').classList.remove('hidden');
             $('confirmModal').classList.add('hidden');
         }
 
+        // ========== AUTOSAVE ==========
+        let autosaveJourneyName = null;
+
+        function getDefaultJourneyName() {
+            const count = savedJourneys.length + 1;
+            return 'My Journey ' + String(count).padStart(2, '0');
+        }
+
+        function showAutosaveIndicator(message) {
+            const indicator = document.getElementById('autosaveIndicator');
+            if (indicator) {
+                indicator.textContent = message;
+                indicator.style.display = 'inline';
+                indicator.style.color = 'rgba(255,255,255,0.8)';
+                setTimeout(() => {
+                    indicator.style.color = 'rgba(255,255,255,0.4)';
+                }, 2000);
+            }
+        }
+
+        async function autosave() {
+            if (!currentUser || !autosaveJourneyName) return;
+
+            try {
+                showAutosaveIndicator('Saving...');
+                const stateData = getCurrentStateData();
+
+                if (currentJourneyId) {
+                    // Update existing journey
+                    const { error } = await supabaseClient
+                        .from('journeys')
+                        .update({
+                            journey_data: stateData,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentJourneyId)
+                        .eq('user_id', currentUser.id);
+
+                    if (error) throw error;
+                } else {
+                    // Create new journey (first autosave)
+                    if (savedJourneys.length >= MAX_JOURNEYS) {
+                        showAutosaveIndicator('Save limit reached');
+                        return;
+                    }
+                    const { data, error } = await supabaseClient
+                        .from('journeys')
+                        .insert({
+                            user_id: currentUser.id,
+                            name: autosaveJourneyName,
+                            journey_data: stateData
+                        })
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    currentJourneyId = data.id;
+                    await loadJourneysFromCloud();
+                }
+                showAutosaveIndicator('✓ Saved');
+            } catch (error) {
+                console.error('Autosave error:', error);
+                showAutosaveIndicator('Save failed');
+            }
+        }
+
         // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
-            // Welcome modal
-            $('beginJourney').onclick = () => $('welcomeModal').classList.add('hidden');
+            // Welcome modal — create journey with name and begin
+            $('beginJourney').onclick = async () => {
+                const nameInput = document.getElementById('welcomeJourneyName');
+                const name = (nameInput && nameInput.value.trim()) || getDefaultJourneyName();
+                autosaveJourneyName = name;
+                $('welcomeModal').classList.add('hidden');
+                // Trigger first autosave to create the journey in the database
+                await autosave();
+            };
             
             // Navigation
             $('continueToStep2').onclick = () => goToStep(2);
@@ -2940,7 +3079,11 @@ Created with NarraWay`;
             // Reset journey
             $('startNewJourney').onclick = () => $('confirmModal').classList.remove('hidden');
             $('cancelReset').onclick = () => $('confirmModal').classList.add('hidden');
-            $('confirmReset').onclick = resetJourney;
+            $('confirmReset').onclick = () => {
+                currentJourneyId = null;
+                autosaveJourneyName = null;
+                resetJourney();
+            };
         }
 
         // Initialize when DOM is ready
@@ -2966,6 +3109,7 @@ Created with NarraWay`;
                 mapCols: state.mapCols,
                 mapRows: state.mapRows,
                 placedTerrain: { ...state.placedTerrain },
+                terrainBuffer: { ...state.terrainBuffer },
                 terrainUsage: { ...state.terrainUsage },
                 placedEquipment: { ...state.placedEquipment },
                 notes1: document.getElementById('notes1').value,
@@ -2981,6 +3125,7 @@ Created with NarraWay`;
             state.mapCols = data.mapCols || 4;
             state.mapRows = data.mapRows || 3;
             state.placedTerrain = data.placedTerrain || {};
+            state.terrainBuffer = data.terrainBuffer || {};
             state.terrainUsage = data.terrainUsage || {};
             state.placedEquipment = data.placedEquipment || {};
 
@@ -3013,7 +3158,7 @@ Created with NarraWay`;
                     return;
                 }
 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('journeys')
                     .select('*')
                     .eq('user_id', currentUser.id)
@@ -3080,7 +3225,7 @@ Created with NarraWay`;
 
                 if (existingId) {
                     // Update existing journey
-                    const { error } = await supabase
+                    const { error } = await supabaseClient
                         .from('journeys')
                         .update({
                             name: name,
@@ -3100,7 +3245,7 @@ Created with NarraWay`;
                     }
 
                     // Create new journey
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('journeys')
                         .insert({
                             user_id: currentUser.id,
@@ -3128,6 +3273,7 @@ Created with NarraWay`;
             const journey = savedJourneys.find(j => j.id === id);
             if (journey) {
                 currentJourneyId = id;
+                autosaveJourneyName = journey.name;
                 loadStateData(journey.data);
                 closeJourneysMenu();
             }
@@ -3140,7 +3286,7 @@ Created with NarraWay`;
             }
 
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('journeys')
                     .delete()
                     .eq('id', id)
@@ -3162,8 +3308,13 @@ Created with NarraWay`;
         function startNewJourney() {
             if (confirm('Start a new journey? Any unsaved changes will be lost.')) {
                 currentJourneyId = null;
+                autosaveJourneyName = null;
                 resetJourney();
                 closeJourneysMenu();
+                // Show welcome modal so they can name the new journey
+                const nameInput = document.getElementById('welcomeJourneyName');
+                if (nameInput) nameInput.value = '';
+                $('welcomeModal').classList.remove('hidden');
             }
         }
 
@@ -3183,12 +3334,12 @@ Created with NarraWay`;
             const overlay = document.getElementById('saveModalOverlay');
             const input = document.getElementById('journeyNameInput');
 
-            // If editing existing journey, pre-fill name
+            // Pre-fill name from current journey or autosave name
             if (currentJourneyId) {
                 const journey = savedJourneys.find(j => j.id === currentJourneyId);
-                input.value = journey ? journey.name : '';
+                input.value = journey ? journey.name : (autosaveJourneyName || '');
             } else {
-                input.value = '';
+                input.value = autosaveJourneyName || '';
             }
 
             overlay.classList.add('open');
@@ -3209,6 +3360,7 @@ Created with NarraWay`;
                 return;
             }
 
+            autosaveJourneyName = name;
             const success = await saveJourney(name, currentJourneyId);
             if (success) {
                 closeSaveModal();
@@ -3228,7 +3380,7 @@ Created with NarraWay`;
             }
         });
 
-        // Save button
+        // Save button (header)
         document.getElementById('saveJourneyBtn').addEventListener('click', openSaveModal);
 
         // New journey button
@@ -3242,6 +3394,20 @@ Created with NarraWay`;
         document.getElementById('journeyNameInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 confirmSave();
+            }
+        });
+
+        // Step 4 save button
+        document.getElementById('saveFromStep4').addEventListener('click', function() {
+            openSaveModal();
+        });
+
+        // Browser back button / page leave warning
+        window.addEventListener('beforeunload', function(e) {
+            // Only warn if there's unsaved work (equipment selected or terrain placed)
+            if (state.selectedEquipment.size > 0 || Object.keys(state.placedTerrain).length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
             }
         });
 
