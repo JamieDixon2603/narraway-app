@@ -539,6 +539,100 @@
             color: var(--color-primary);
         }
 
+        /* ========== PULL QUOTES (scattered) ========== */
+        .pull-quote {
+            padding: 48px 24px;
+            text-align: center;
+            background: var(--color-header);
+        }
+
+        .pull-quote p {
+            max-width: 700px;
+            margin: 0 auto;
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 600;
+            font-style: italic;
+            color: var(--color-primary);
+            line-height: 1.6;
+        }
+
+        /* ========== TESTIMONIALS SECTION ========== */
+        .testimonials {
+            padding: 100px 24px;
+            background: var(--color-background);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 36px;
+            border: 3px solid var(--color-wood);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: "\201C";
+            font-family: var(--font-heading);
+            font-size: 5rem;
+            color: var(--color-primary);
+            opacity: 0.15;
+            position: absolute;
+            top: 8px;
+            left: 20px;
+            line-height: 1;
+        }
+
+        .testimonial-stars {
+            color: var(--color-primary);
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-card blockquote {
+            font-size: 1rem;
+            color: var(--color-wood);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+
+        .testimonial-role {
+            font-size: 0.9rem;
+            color: var(--color-wood-light);
+        }
+
+        @media (max-width: 900px) {
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pull-quote p {
+                font-size: 1.15rem;
+            }
+        }
+
         /* ========== RESPONSIVE ========== */
         @media (max-width: 900px) {
             .steps-grid,
@@ -653,6 +747,11 @@
         </div>
     </section>
 
+    <!-- Pull Quote 1 -->
+    <div class="pull-quote fade-in">
+        <p>"I am truly amazed by how powerful this experience is."</p>
+    </div>
+
     <!-- Problem Section -->
     <section class="problem">
         <div class="problem-content fade-in">
@@ -696,6 +795,11 @@
         </div>
     </section>
 
+    <!-- Pull Quote 2 -->
+    <div class="pull-quote fade-in">
+        <p>"My mind was clear and focused - far from the confused state it was in before!"</p>
+    </div>
+
     <!-- Video Section -->
     <section class="videos" id="videos">
         <div class="container">
@@ -738,6 +842,11 @@
         </div>
     </section>
 
+    <!-- Pull Quote 3 -->
+    <div class="pull-quote fade-in">
+        <p>"The NarraWay experience provided me with clarity and confidence to move forward."</p>
+    </div>
+
     <!-- What's Included Section -->
     <section class="included" id="included">
         <div class="container">
@@ -755,6 +864,46 @@
             </div>
         </div>
     </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What People Are Saying</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>"The step-by-step approach to helping me identify my strengths was really impactful. By the end of the session, my mind was clear and focused - far from the confused state it was in before! The NarraWay experience provided me with clarity and confidence to move forward."</blockquote>
+                    <p class="testimonial-author">Hayley</p>
+                    <p class="testimonial-role">Marketing Consultant</p>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>"You begin by identifying your strengths, which is really helpful when it comes to making whatever decision you're thinking about. I enjoyed how visual and gamified Narraway is. It's a fun way to work through challenges and decisions that might feel difficult or uncomfortable in another context."</blockquote>
+                    <p class="testimonial-author">Gwenydd</p>
+                    <p class="testimonial-role">Marketing Consultant</p>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>"Pulling the symbols onto the map made me think very differently about my strengths & it became clear to me where I am not currently using them. I will definitely use it again for different scenarios. A very brilliant creation!!"</blockquote>
+                    <p class="testimonial-author">Natalie</p>
+                    <p class="testimonial-role">Web Developer</p>
+                </div>
+                <div class="testimonial-card fade-in">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>"What started playfully became deeply revealing. By the end, my life and challenges were laid out vividly before me, showing not only where I am now, but how I can move forward. It works at a surprisingly unconscious level, bringing clarity and direction."</blockquote>
+                    <p class="testimonial-author">Helene</p>
+                    <p class="testimonial-role">Career Coach</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pull Quote 4 -->
+    <div class="pull-quote fade-in">
+        <p>"My life and challenges were laid out vividly before me, showing not only where I am now, but how I can move forward."</p>
+    </div>
 
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
