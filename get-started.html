@@ -683,6 +683,104 @@
             opacity: 0.8;
         }
 
+        /* Word count display (shared) */
+        .word-count-display {
+            display: block;
+            font-size: 0.85rem;
+            color: #888;
+            text-align: right;
+            margin-top: 6px;
+            font-family: var(--font-body);
+        }
+        .word-count-display.near-limit {
+            color: #c07a00;
+            font-weight: 600;
+        }
+        .word-count-display.at-limit {
+            color: #c0392b;
+            font-weight: 700;
+        }
+
+        /* Panel subtitle */
+        .panel-subtitle {
+            font-size: 0.95rem;
+            color: #666;
+            margin: -4px 0 12px 0;
+            font-style: italic;
+        }
+
+        /* Step 3 — Moves Cards */
+        .moves-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .move-card {
+            background: #fdf6e8;
+            border: 1.5px solid #d8c9a8;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .move-card-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 8px;
+            margin-bottom: 2px;
+        }
+
+        .move-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .move-field-label {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #7a6040;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .move-field-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid var(--color-wood-light);
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            background: white;
+            color: var(--color-text);
+            resize: vertical;
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+
+        .move-field-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(228, 166, 37, 0.2);
+        }
+
+        .move-field-input::placeholder {
+            color: #aaa;
+        }
+
+        @media (max-width: 900px) {
+            .moves-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Step 2 Layout */
         .step2-layout {
             display: grid;
@@ -692,6 +790,56 @@
 
         @media (max-width: 1024px) {
             .step2-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Step 2 Map Notes */
+        .map-notes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .map-notes-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-notes-label {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .map-notes-section .notes-textarea {
+            min-height: 120px;
+            flex: 1;
+        }
+
+        .map-notes-word-count {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: right;
+            font-family: var(--font-body);
+        }
+
+        .map-notes-word-count.near-limit {
+            color: #c07a00;
+            font-weight: 600;
+        }
+
+        .map-notes-word-count.at-limit {
+            color: #c0392b;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .map-notes-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1528,6 +1676,338 @@
         .app-content.hidden {
             display: none;
         }
+
+        /* ===== GRID COORDINATES ===== */
+
+        .map-with-coords {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .coord-col-headers {
+            display: flex;
+            align-items: center;
+            margin-left: 28px; /* offset for row label column */
+        }
+
+        .coord-col-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 26px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--color-wood-light);
+            font-family: var(--font-heading);
+            flex-shrink: 0;
+            letter-spacing: 0.03em;
+        }
+
+        .coord-row-body {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .coord-row-labels {
+            display: flex;
+            flex-direction: column;
+            width: 28px;
+            flex-shrink: 0;
+        }
+
+        .coord-row-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--color-wood-light);
+            font-family: var(--font-heading);
+            flex-shrink: 0;
+            letter-spacing: 0.03em;
+        }
+
+        .grid-coords-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text);
+            cursor: pointer;
+            font-family: var(--font-body);
+            user-select: none;
+        }
+
+        .grid-coords-toggle input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        /* ===== STEP 1 — STRENGTHS REDESIGN ===== */
+
+        .section-description {
+            display: block;
+            font-family: var(--font-body);
+            color: var(--color-text);
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        .reflection-prompts {
+            list-style: decimal;
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .reflection-prompts li {
+            margin-bottom: 8px;
+            font-family: var(--font-body);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* Strength List Builder */
+        .strength-list-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .strength-name-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            background: white;
+            color: var(--color-text);
+        }
+
+        .strength-name-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .strength-list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .strength-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.7);
+            border: 2px solid var(--color-wood-light);
+            border-radius: 8px;
+        }
+
+        .strength-list-item-name {
+            flex: 1;
+            font-family: var(--font-body);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .remove-strength-btn {
+            background: var(--color-secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .strength-counter {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: var(--color-secondary);
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .strength-counter.valid {
+            background: var(--color-tertiary-light);
+        }
+
+        /* Strength Slots */
+        .strength-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .strength-slot {
+            background: var(--color-background);
+            border: 2px solid var(--color-wood-light);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .strength-drop-zone {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px dashed var(--color-wood-light);
+            background: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .strength-drop-zone.dragover {
+            border-color: var(--color-primary);
+            background: rgba(228, 166, 37, 0.2);
+        }
+
+        .strength-drop-zone .drop-hint {
+            font-size: 0.72rem;
+            color: var(--color-wood-light);
+            text-align: center;
+            line-height: 1.3;
+            padding: 4px;
+            pointer-events: none;
+        }
+
+        .strength-drop-zone img.assigned-card {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .remove-card-btn {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--color-secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .strength-slot:hover .remove-card-btn {
+            display: flex;
+        }
+
+        .strength-slot-title {
+            width: 100%;
+            padding: 6px 10px;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            color: var(--color-text);
+            text-align: center;
+            background: white;
+        }
+
+        .strength-slot-title:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .strength-slot-descriptor {
+            width: 100%;
+            padding: 8px 10px;
+            border: 2px solid var(--color-wood-light);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            color: var(--color-text);
+            resize: vertical;
+            min-height: 60px;
+            background: white;
+        }
+
+        .strength-slot-descriptor:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        /* Assignment Gallery */
+        .assignment-gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .assignment-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            border: 2px dashed var(--color-wood-light);
+        }
+
+        .assignment-card {
+            cursor: grab;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .assignment-card:hover:not(.in-use) {
+            transform: scale(1.1);
+        }
+
+        .assignment-card:active:not(.in-use) {
+            cursor: grabbing;
+        }
+
+        .assignment-card.in-use {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .assignment-card img {
+            display: block;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -1649,21 +2129,15 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Step 1: Equipment Selection -->
+        <!-- Step 1: Strengths Profile -->
         <div class="step-container active" id="step1">
             <div class="panel">
                 <div class="panel-header">
                     <span class="panel-icon">✓</span>
-                    <h2 class="panel-title">Step 1: Choose Your Equipment</h2>
+                    <h2 class="panel-title">Step 1: Discover Your Strengths</h2>
                 </div>
                 <div class="instructions">
-                    <p><strong>Reflect on your strengths.</strong> Think about:</p>
-                    <ol>
-                        <li>What do people normally come to you for help with?</li>
-                        <li>What sort of things energise you?</li>
-                        <li>What sort of things do you find easy that others find difficult?</li>
-                    </ol>
-                    <p>When you are clear on your strengths, choose <strong>5-7 of the Equipment cards</strong> from the gallery below to represent those. It doesn't matter what those cards are, what matters is what those cards mean to you.</p>
+                    <p><strong>Your strengths are the equipment you carry on every journey.</strong> In this step, you'll gather evidence of your strengths, spot patterns, name them — and choose a card to represent each one.</p>
                 </div>
             </div>
 
@@ -1760,31 +2234,83 @@
                 </div>
             </div>
 
+            <!-- Section 1: Survey Responses -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📋</span>
+                    <span class="panel-title">Survey Responses</span>
+                </div>
+                <span class="section-description">If you've sent a peer survey, paste the responses here. What do the people who know you best say about your strengths?</span>
+                <textarea class="notes-textarea" id="surveyResponses" placeholder="Paste survey responses here..."></textarea>
+            </div>
+
+            <!-- Section 2: Self-Reflection -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🔍</span>
+                    <span class="panel-title">Self-Reflection</span>
+                </div>
+                <span class="section-description">Reflect on the following questions, then write your thoughts below:</span>
+                <ol class="reflection-prompts">
+                    <li><em>What do people consistently come to you for?</em></li>
+                    <li><em>What feels like play to you but looks like work to others?</em></li>
+                    <li><em>When have you been at your absolute best — what were the conditions and what were you doing?</em></li>
+                </ol>
+                <textarea class="notes-textarea" id="selfReflection" placeholder="Write your reflections here..."></textarea>
+            </div>
+
+            <!-- Section 3: Patterns Spotted -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🔎</span>
+                    <span class="panel-title">Patterns Spotted</span>
+                </div>
+                <span class="section-description">Looking across your survey responses and self-reflection — what patterns do you notice? What themes keep coming up?</span>
+                <textarea class="notes-textarea" id="patternsSpotted" placeholder="What patterns are emerging for you?"></textarea>
+            </div>
+
+            <!-- Section 4: Strength List Builder -->
             <div class="panel">
                 <div class="panel-header">
                     <span class="panel-icon">📝</span>
-                    <span class="panel-title">Your Notes</span>
+                    <span class="panel-title">Name Your Strengths</span>
                 </div>
-                <textarea class="notes-textarea" id="notes1" placeholder="Capture your thoughts about your strengths here..."></textarea>
+                <span class="section-description">Give each strength a name — 1 to 3 words. Aim for 5 to 7 strengths.</span>
+                <div class="strength-list-input-row">
+                    <input type="text" class="strength-name-input" id="strengthNameInput" placeholder="e.g. Strategic Thinking" maxlength="40">
+                    <button class="btn btn-secondary" id="addStrengthBtn" onclick="addStrength()">Add</button>
+                </div>
+                <div class="strength-list-items" id="strengthListItems"></div>
+                <span class="strength-counter" id="strengthCounter">0 strengths — aim for 5 to 7</span>
             </div>
 
-            <div class="panel">
+            <!-- Section 5: Card Assignment -->
+            <div class="panel" id="cardAssignmentPanel" style="display:none;">
                 <div class="panel-header">
-                    <span class="panel-icon">🎒</span>
-                    <span class="panel-title">Your Selected Equipment</span>
+                    <span class="panel-icon">🃏</span>
+                    <span class="panel-title">Choose Your Equipment Cards</span>
                 </div>
-                <div class="selected-equipment" id="selectedEquipment"></div>
-            </div>
-
-            <div class="panel">
-                <div class="gallery-controls">
-                    <span class="counter-badge invalid" id="equipmentCounter">Equipment Selected: 0 / 7 (minimum 5)</span>
+                <span class="section-description">Drag a card from the gallery onto each strength slot. It doesn't matter which card you choose — what matters is what it means to you.</span>
+                <div class="strength-slots-grid" id="strengthSlotsGrid"></div>
+                <div class="assignment-gallery-header">
+                    <span class="section-description" style="margin:0;">Equipment Gallery — drag a card onto a strength above</span>
                     <div class="size-control">
-                        <label>Gallery Size:</label>
-                        <input type="range" class="size-slider" id="equipmentSizeSlider" min="50" max="100" value="75">
+                        <label>Size:</label>
+                        <input type="range" class="size-slider" id="assignmentGallerySlider" min="50" max="100" value="70" oninput="renderAssignmentGallery()">
                     </div>
                 </div>
-                <div class="equipment-gallery" id="equipmentGallery"></div>
+                <div class="assignment-gallery" id="assignmentGallery"></div>
+            </div>
+
+            <!-- Section 6: Strengths Summary -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">⭐</span>
+                    <span class="panel-title">Strengths Summary</span>
+                </div>
+                <span class="section-description"><strong data-solo="I am at my best when..." data-team="We are at our best when...">I am at my best when...</strong></span>
+                <textarea class="notes-textarea" id="strengthsSummary" data-solo-placeholder="Complete the sentence: I am at my best when..." data-team-placeholder="Complete the sentence: We are at our best when..." placeholder="Complete the sentence: I am at my best when..."></textarea>
+                <span class="word-count-display" id="strengthsSummaryCount">0 / 300 words</span>
             </div>
 
             <div class="panel nav-panel">
@@ -1842,14 +2368,6 @@
 
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-icon">📝</span>
-                    <span class="panel-title">Your Notes</span>
-                </div>
-                <textarea class="notes-textarea" id="notes2" placeholder="Describe your challenge or goal here..."></textarea>
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
                     <span class="panel-icon">📐</span>
                     <span class="panel-title">Choose Your Map Size</span>
                 </div>
@@ -1880,11 +2398,39 @@
                             <input type="range" class="size-slider" id="mapSizeSlider" min="60" max="150" value="100">
                             <span id="mapSizeLabel">100%</span>
                         </div>
+                        <label class="grid-coords-toggle">
+                            <input type="checkbox" id="gridCoordsToggle2" onchange="toggleGridCoords(this.checked)">
+                            Grid coordinates
+                        </label>
                     </div>
-                    <div class="map-container">
+                    <div class="map-container" id="mapContainer">
                         <div class="map-grid" id="mapGrid"></div>
                     </div>
                     <p class="validation-msg" id="mapValidation">Please fill all map tiles (0/12 filled)</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📝</span>
+                    <span class="panel-title">Journey Logbook</span>
+                </div>
+                <div class="map-notes-grid">
+                    <div class="map-notes-section">
+                        <span class="map-notes-label" data-solo="Where I am right now..." data-team="Where we are right now...">Where I am right now...</span>
+                        <textarea class="notes-textarea" id="notes2Left" placeholder="Describe where you currently are on this journey..."></textarea>
+                        <span class="map-notes-word-count" id="notes2LeftCount">0 / 100 words</span>
+                    </div>
+                    <div class="map-notes-section">
+                        <span class="map-notes-label">What lies in between...</span>
+                        <textarea class="notes-textarea" id="notes2Centre" placeholder="Describe the terrain, obstacles and opportunities ahead..."></textarea>
+                        <span class="map-notes-word-count" id="notes2CentreCount">0 / 100 words</span>
+                    </div>
+                    <div class="map-notes-section">
+                        <span class="map-notes-label" data-solo="Where I want to go..." data-team="Where we want to go...">Where I want to go...</span>
+                        <textarea class="notes-textarea" id="notes2Right" placeholder="Describe your destination and what success looks like..."></textarea>
+                        <span class="map-notes-word-count" id="notes2RightCount">0 / 100 words</span>
+                    </div>
                 </div>
             </div>
 
@@ -1932,14 +2478,6 @@
 
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-icon">📝</span>
-                    <span class="panel-title">Your Notes</span>
-                </div>
-                <textarea class="notes-textarea" id="notes3" placeholder="How will you apply your strengths to this journey?"></textarea>
-            </div>
-
-            <div class="panel">
-                <div class="panel-header">
                     <span class="panel-icon">🎒</span>
                     <span class="panel-title">Your Equipment (drag onto map)</span>
                 </div>
@@ -1953,9 +2491,109 @@
                         <input type="range" class="size-slider" id="strategyMapSlider" min="80" max="200" value="120">
                         <span id="strategyMapLabel">120%</span>
                     </div>
+                    <label class="grid-coords-toggle">
+                        <input type="checkbox" id="gridCoordsToggle3" onchange="toggleGridCoords(this.checked)">
+                        Grid coordinates
+                    </label>
                 </div>
-                <div class="map-container">
+                <div class="map-container" id="strategyMapContainer">
                     <div class="map-grid" id="strategyMapGrid"></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📝</span>
+                    <span class="panel-title" data-solo="My strengths will help me..." data-team="Our strengths will help us...">My strengths will help me...</span>
+                </div>
+                <p class="panel-subtitle">Reflect on how your strengths will help you navigate this journey. Aim for around 300 words.</p>
+                <textarea class="notes-textarea" id="notes3" data-solo-placeholder="My strengths will help me..." data-team-placeholder="Our strengths will help us..." placeholder="My strengths will help me..."></textarea>
+                <span class="word-count-display" id="notes3Count">0 / 300 words</span>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🎯</span>
+                    <span class="panel-title" data-solo="My Three Moves" data-team="Our Three Moves">My Three Moves</span>
+                </div>
+                <p class="panel-subtitle">Define three specific actions you will take, using your strengths.</p>
+                <div class="moves-grid">
+
+                    <!-- Move 1 -->
+                    <div class="move-card">
+                        <div class="move-card-title">Move 1</div>
+                        <div class="move-field">
+                            <label class="move-field-label">The Move</label>
+                            <textarea class="move-field-input" id="move1Move" data-solo-placeholder="One specific action I will take..." data-team-placeholder="One specific action we will take..." placeholder="One specific action I will take..."></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="The Strength/s I'm Using" data-team="The Strength/s We're Using">The Strength/s I'm Using</label>
+                            <textarea class="move-field-input" id="move1Strengths" data-solo-placeholder="Which of my strengths does this draw on?" data-team-placeholder="Which of our strengths does this draw on?" placeholder="Which of my strengths does this draw on?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">When and Where</label>
+                            <textarea class="move-field-input" id="move1WhenWhere" data-solo-placeholder="When and where will I do this?" data-team-placeholder="When and where will we do this?" placeholder="When and where will I do this?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="If I Get Stuck" data-team="If We Get Stuck">If I Get Stuck</label>
+                            <textarea class="move-field-input" id="move1IfStuck" data-solo-placeholder="What will I do if I hit an obstacle?" data-team-placeholder="What will we do if we hit an obstacle?" placeholder="What will I do if I hit an obstacle?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">Checkpoint</label>
+                            <textarea class="move-field-input" id="move1Checkpoint" data-solo-placeholder="Who will I check in with and when?" data-team-placeholder="Who will we check in with and when?" placeholder="Who will I check in with and when?"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Move 2 -->
+                    <div class="move-card">
+                        <div class="move-card-title">Move 2</div>
+                        <div class="move-field">
+                            <label class="move-field-label">The Move</label>
+                            <textarea class="move-field-input" id="move2Move" data-solo-placeholder="One specific action I will take..." data-team-placeholder="One specific action we will take..." placeholder="One specific action I will take..."></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="The Strength/s I'm Using" data-team="The Strength/s We're Using">The Strength/s I'm Using</label>
+                            <textarea class="move-field-input" id="move2Strengths" data-solo-placeholder="Which of my strengths does this draw on?" data-team-placeholder="Which of our strengths does this draw on?" placeholder="Which of my strengths does this draw on?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">When and Where</label>
+                            <textarea class="move-field-input" id="move2WhenWhere" data-solo-placeholder="When and where will I do this?" data-team-placeholder="When and where will we do this?" placeholder="When and where will I do this?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="If I Get Stuck" data-team="If We Get Stuck">If I Get Stuck</label>
+                            <textarea class="move-field-input" id="move2IfStuck" data-solo-placeholder="What will I do if I hit an obstacle?" data-team-placeholder="What will we do if we hit an obstacle?" placeholder="What will I do if I hit an obstacle?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">Checkpoint</label>
+                            <textarea class="move-field-input" id="move2Checkpoint" data-solo-placeholder="Who will I check in with and when?" data-team-placeholder="Who will we check in with and when?" placeholder="Who will I check in with and when?"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Move 3 -->
+                    <div class="move-card">
+                        <div class="move-card-title">Move 3</div>
+                        <div class="move-field">
+                            <label class="move-field-label">The Move</label>
+                            <textarea class="move-field-input" id="move3Move" data-solo-placeholder="One specific action I will take..." data-team-placeholder="One specific action we will take..." placeholder="One specific action I will take..."></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="The Strength/s I'm Using" data-team="The Strength/s We're Using">The Strength/s I'm Using</label>
+                            <textarea class="move-field-input" id="move3Strengths" data-solo-placeholder="Which of my strengths does this draw on?" data-team-placeholder="Which of our strengths does this draw on?" placeholder="Which of my strengths does this draw on?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">When and Where</label>
+                            <textarea class="move-field-input" id="move3WhenWhere" data-solo-placeholder="When and where will I do this?" data-team-placeholder="When and where will we do this?" placeholder="When and where will I do this?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label" data-solo="If I Get Stuck" data-team="If We Get Stuck">If I Get Stuck</label>
+                            <textarea class="move-field-input" id="move3IfStuck" data-solo-placeholder="What will I do if I hit an obstacle?" data-team-placeholder="What will we do if we hit an obstacle?" placeholder="What will I do if I hit an obstacle?"></textarea>
+                        </div>
+                        <div class="move-field">
+                            <label class="move-field-label">Checkpoint</label>
+                            <textarea class="move-field-input" id="move3Checkpoint" data-solo-placeholder="Who will I check in with and when?" data-team-placeholder="Who will we check in with and when?" placeholder="Who will I check in with and when?"></textarea>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -2086,6 +2724,10 @@
             <h2 style="margin-bottom: 8px;">Start New Journey</h2>
             <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">Give your journey a name. Your progress will be saved automatically.</p>
             <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 12px;">
+            <label style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #555; margin-bottom: 16px; cursor: pointer; user-select: none;">
+                <input type="checkbox" id="teamModeToggle" style="width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;">
+                <span>This is for a team <span style="color: #999; font-size: 0.8rem;">(switches I/My to We/Our throughout)</span></span>
+            </label>
             <button class="btn btn-primary" id="confirmJourneyName" style="width: 100%;">START NEW JOURNEY</button>
         </div>
     </div>
@@ -2203,13 +2845,17 @@
         // ========== STATE ==========
         const state = {
             currentStep: 1,
-            selectedEquipment: new Set(),
+            selectedEquipment: new Set(), // derived from strengthCards — do not mutate directly
             mapCols: 4,
             mapRows: 3,
             placedTerrain: {}, // "row-col" -> terrainKey
             terrainBuffer: {}, // "row-col" -> terrainKey (tiles hidden by downsizing, restored on upsize)
             terrainUsage: {}, // terrainKey -> count used
             placedEquipment: {}, // "cellIdx-slotIdx" -> equipmentKey
+            strengthsList: [], // array of strength name strings
+            strengthCards: [], // array of {name, cardId, title, descriptor}
+            showGridCoords: false,
+            teamMode: false,
         };
 
         // Initialize terrain usage
@@ -2229,76 +2875,253 @@
             const homeLogo = $('homeLogo');
             if (homeLogo) homeLogo.src = LOGOS.transparent;
 
-            // Render equipment gallery
-            renderEquipmentGallery();
-            
+            // Render Step 1 strengths UI
+            renderAssignmentGallery();
+            renderStrengthSlots();
+
             // Render terrain gallery
             renderTerrainGallery();
-            
+
             // Render initial map
             renderMap();
 
             // Setup event listeners
             setupEventListeners();
-            
+
             // Update counters
-            updateEquipmentCounter();
+            updateStrengthCounter();
+            updateContinueButton();
             updateTerrainCounter();
         }
 
-        // ========== EQUIPMENT GALLERY ==========
-        function renderEquipmentGallery() {
-            const gallery = $('equipmentGallery');
-            const size = $('equipmentSizeSlider').value;
-            
+        // ========== STEP 1 — STRENGTHS ==========
+
+        function addStrength() {
+            const input = $('strengthNameInput');
+            const name = input.value.trim();
+            if (!name) return;
+            if (state.strengthsList.length >= 7) return;
+            state.strengthsList.push(name);
+            state.strengthCards.push({ name: name, cardId: null, title: name, descriptor: '' });
+            input.value = '';
+            renderStrengthsList();
+            renderStrengthSlots();
+            renderAssignmentGallery();
+            updateStrengthCounter();
+            updateContinueButton();
+        }
+
+        function removeStrength(index) {
+            const card = state.strengthCards[index];
+            if (card && card.cardId) {
+                state.selectedEquipment.delete(card.cardId);
+            }
+            state.strengthsList.splice(index, 1);
+            state.strengthCards.splice(index, 1);
+            renderStrengthsList();
+            renderStrengthSlots();
+            renderAssignmentGallery();
+            updateStrengthCounter();
+            updateContinueButton();
+        }
+
+        function renderStrengthsList() {
+            const container = $('strengthListItems');
+            if (!container) return;
+            container.innerHTML = '';
+            state.strengthsList.forEach((name, i) => {
+                const item = document.createElement('div');
+                item.className = 'strength-list-item';
+                item.innerHTML = `
+                    <span class="strength-list-item-name">${i + 1}. ${name}</span>
+                    <button class="remove-strength-btn" onclick="removeStrength(${i})" title="Remove">&times;</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function updateStrengthCounter() {
+            const counter = $('strengthCounter');
+            if (!counter) return;
+            const count = state.strengthsList.length;
+            if (count === 0) {
+                counter.textContent = '0 strengths — aim for 5 to 7';
+            } else if (count === 1) {
+                counter.textContent = '1 strength — aim for 5 to 7';
+            } else if (count < 5) {
+                counter.textContent = `${count} strengths — aim for 5 to 7`;
+            } else {
+                counter.textContent = `${count} strength${count === 1 ? '' : 's'}`;
+            }
+            counter.className = 'strength-counter' + (count >= 5 ? ' valid' : '');
+            const addBtn = $('addStrengthBtn');
+            if (addBtn) addBtn.disabled = count >= 7;
+        }
+
+        function renderStrengthSlots() {
+            const grid = $('strengthSlotsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            state.strengthCards.forEach((card, i) => {
+                const slot = document.createElement('div');
+                slot.className = 'strength-slot';
+
+                const dropZone = document.createElement('div');
+                dropZone.className = 'strength-drop-zone' + (card.cardId ? ' has-card' : '');
+
+                if (card.cardId) {
+                    dropZone.innerHTML = `
+                        <img class="assigned-card" src="${EQUIPMENT_CARDS[card.cardId]}" draggable="false">
+                        <button class="remove-card-btn" onclick="removeCardFromStrengthSlot(${i})" title="Remove">&times;</button>
+                    `;
+                } else {
+                    dropZone.innerHTML = `<span class="drop-hint">Drop a card here</span>`;
+                }
+
+                dropZone.ondragover = (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('dragover');
+                };
+                dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+                dropZone.ondrop = (e) => handleStrengthCardDrop(e, i);
+
+                const titleInput = document.createElement('input');
+                titleInput.type = 'text';
+                titleInput.className = 'strength-slot-title';
+                titleInput.value = card.title;
+                titleInput.maxLength = 40;
+                titleInput.oninput = () => { state.strengthCards[i].title = titleInput.value; };
+
+                const descriptorArea = document.createElement('textarea');
+                descriptorArea.className = 'strength-slot-descriptor';
+                descriptorArea.placeholder = 'Describe this strength in 1–2 sentences...';
+                descriptorArea.value = card.descriptor;
+                descriptorArea.oninput = () => { state.strengthCards[i].descriptor = descriptorArea.value; };
+
+                slot.appendChild(dropZone);
+                slot.appendChild(titleInput);
+                slot.appendChild(descriptorArea);
+                grid.appendChild(slot);
+            });
+
+            const assignmentPanel = $('cardAssignmentPanel');
+            if (assignmentPanel) {
+                assignmentPanel.style.display = state.strengthsList.length > 0 ? '' : 'none';
+            }
+        }
+
+        function handleStrengthCardDrop(e, slotIndex) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const cardId = e.dataTransfer.getData('strengthCard');
+            if (!cardId) return;
+            // Remove card from any other slot it's already in
+            state.strengthCards.forEach((card, i) => {
+                if (card.cardId === cardId && i !== slotIndex) card.cardId = null;
+            });
+            state.strengthCards[slotIndex].cardId = cardId;
+            syncSelectedEquipment();
+            renderStrengthSlots();
+            renderAssignmentGallery();
+            updateContinueButton();
+        }
+
+        function removeCardFromStrengthSlot(slotIndex) {
+            state.strengthCards[slotIndex].cardId = null;
+            syncSelectedEquipment();
+            renderStrengthSlots();
+            renderAssignmentGallery();
+            updateContinueButton();
+        }
+
+        function syncSelectedEquipment() {
+            state.selectedEquipment.clear();
+            state.strengthCards.forEach(card => {
+                if (card.cardId) state.selectedEquipment.add(card.cardId);
+            });
+        }
+
+        function renderAssignmentGallery() {
+            const gallery = $('assignmentGallery');
+            if (!gallery) return;
+            const slider = $('assignmentGallerySlider');
+            const size = slider ? slider.value : 70;
+
+            const assignedCards = new Set(
+                state.strengthCards.filter(c => c.cardId).map(c => c.cardId)
+            );
+
             gallery.innerHTML = '';
             Object.keys(EQUIPMENT_CARDS).forEach(key => {
+                const inUse = assignedCards.has(key);
                 const div = document.createElement('div');
-                div.className = 'equipment-card' + (state.selectedEquipment.has(key) ? ' selected' : '');
+                div.className = 'assignment-card' + (inUse ? ' in-use' : '');
                 div.dataset.key = key;
+                div.draggable = !inUse;
                 div.innerHTML = `<img src="${EQUIPMENT_CARDS[key]}" style="width:${size}px;height:${size}px;" draggable="false">`;
-                div.onclick = () => toggleEquipment(key);
+                if (!inUse) {
+                    div.ondragstart = (e) => { e.dataTransfer.setData('strengthCard', key); };
+                }
                 gallery.appendChild(div);
             });
         }
 
-        function toggleEquipment(key) {
-            if (state.selectedEquipment.has(key)) {
-                state.selectedEquipment.delete(key);
-            } else if (state.selectedEquipment.size < 7) {
-                state.selectedEquipment.add(key);
-            }
-            renderEquipmentGallery();
-            renderSelectedEquipment();
-            updateEquipmentCounter();
-            updateContinueButton();
+        function updateContinueButton() {
+            const btn = $('continueToStep2');
+            if (!btn) return;
+            const strengthCount = state.strengthsList.length;
+            const assignedCount = state.strengthCards.filter(c => c.cardId).length;
+            btn.disabled = strengthCount < 5 || assignedCount < 5;
         }
 
-        function renderSelectedEquipment() {
-            const container = $('selectedEquipment');
-            container.innerHTML = '';
-            state.selectedEquipment.forEach(key => {
-                const div = document.createElement('div');
-                div.className = 'selected-item';
-                div.innerHTML = `
-                    <img src="${EQUIPMENT_CARDS[key]}" style="width:60px;height:60px;" draggable="false">
-                    <button class="remove-btn" onclick="toggleEquipment('${key}')">&times;</button>
-                `;
-                container.appendChild(div);
+        function updateStrengthsSummaryWordCount() {
+            applyWordCountUI($('strengthsSummary'), $('strengthsSummaryCount'), 300, 'word-count-display');
+        }
+
+        // ========== MAP NOTES WORD COUNTS ==========
+        function countWords(text) {
+            return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+        }
+
+        function trimToWordLimit(text, limit) {
+            const words = text.trim().split(/\s+/);
+            if (words.length <= limit) return text;
+            // Preserve any trailing space/newline by checking if original ended with whitespace
+            const trimmed = words.slice(0, limit).join(' ');
+            return trimmed;
+        }
+
+        function applyWordCountUI(textarea, countEl, limit, baseClass) {
+            if (!textarea || !countEl) return;
+            if (countWords(textarea.value) > limit) {
+                const pos = textarea.selectionStart;
+                textarea.value = trimToWordLimit(textarea.value, limit);
+                textarea.selectionStart = textarea.selectionEnd = Math.min(pos, textarea.value.length);
+            }
+            const words = countWords(textarea.value);
+            const remaining = limit - words;
+            const warningThreshold = Math.round(limit * 0.2); // warn at 20% remaining
+            if (remaining <= 0) {
+                countEl.textContent = `${limit} / ${limit} words — limit reached`;
+                countEl.className = baseClass + ' at-limit';
+            } else if (remaining <= warningThreshold) {
+                countEl.textContent = `${words} / ${limit} words (${remaining} remaining)`;
+                countEl.className = baseClass + ' near-limit';
+            } else {
+                countEl.textContent = `${words} / ${limit} words`;
+                countEl.className = baseClass;
+            }
+        }
+
+        function updateMapNotesWordCounts() {
+            ['notes2Left', 'notes2Centre', 'notes2Right'].forEach(id => {
+                applyWordCountUI($(id), $(id + 'Count'), 100, 'map-notes-word-count');
             });
         }
 
-        function updateEquipmentCounter() {
-            const counter = $('equipmentCounter');
-            const count = state.selectedEquipment.size;
-            counter.textContent = `Equipment Selected: ${count} / 7 (minimum 5)`;
-            counter.className = 'counter-badge ' + (count >= 5 ? 'valid' : 'invalid');
-        }
-
-        function updateContinueButton() {
-            const btn = $('continueToStep2');
-            const count = state.selectedEquipment.size;
-            btn.disabled = count < 5 || count > 7;
+        function updateNotes3WordCount() {
+            applyWordCountUI($('notes3'), $('notes3Count'), 300, 'word-count-display');
         }
 
         // ========== TERRAIN GALLERY ==========
@@ -2369,24 +3192,55 @@
 
         // ========== MAP ==========
         function renderMap() {
-            const grid = $('mapGrid');
+            const container = $('mapContainer');
             const size = $('mapSizeSlider').value;
-            const cellSize = size;
-            
+            const cellSize = parseInt(size);
+
+            // Rebuild container structure based on coord state
+            if (state.showGridCoords) {
+                container.innerHTML = `
+                    <div class="map-with-coords">
+                        <div class="coord-col-headers" id="mapCoordCols"></div>
+                        <div class="coord-row-body">
+                            <div class="coord-row-labels" id="mapCoordRows"></div>
+                            <div class="map-grid" id="mapGrid"></div>
+                        </div>
+                    </div>`;
+                const colHeaders = $('mapCoordCols');
+                for (let c = 0; c < state.mapCols; c++) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'coord-col-label';
+                    lbl.style.width = cellSize + 'px';
+                    lbl.textContent = String.fromCharCode(65 + c);
+                    colHeaders.appendChild(lbl);
+                }
+                const rowLabels = $('mapCoordRows');
+                for (let r = 0; r < state.mapRows; r++) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'coord-row-label';
+                    lbl.style.height = cellSize + 'px';
+                    lbl.textContent = r + 1;
+                    rowLabels.appendChild(lbl);
+                }
+            } else {
+                container.innerHTML = `<div class="map-grid" id="mapGrid"></div>`;
+            }
+
+            const grid = $('mapGrid');
             grid.style.gridTemplateColumns = `repeat(${state.mapCols}, ${cellSize}px)`;
             grid.style.gridTemplateRows = `repeat(${state.mapRows}, ${cellSize}px)`;
-            
             grid.innerHTML = '';
+
             for (let row = 0; row < state.mapRows; row++) {
                 for (let col = 0; col < state.mapCols; col++) {
                     const cellKey = `${row}-${col}`;
                     const terrainKey = state.placedTerrain[cellKey];
-                    
+
                     const cell = document.createElement('div');
                     cell.className = 'map-cell' + (terrainKey ? ' filled' : '');
                     cell.dataset.row = row;
                     cell.dataset.col = col;
-                    
+
                     if (terrainKey) {
                         cell.innerHTML = `
                             <img src="${TERRAIN_CARDS[terrainKey].img}" draggable="true">
@@ -2396,18 +3250,18 @@
                             e.dataTransfer.setData('moveTerrain', JSON.stringify({cellKey, terrainKey}));
                         };
                     }
-                    
+
                     cell.ondragover = (e) => {
                         e.preventDefault();
                         cell.classList.add('dragover');
                     };
                     cell.ondragleave = () => cell.classList.remove('dragover');
                     cell.ondrop = (e) => handleTerrainDrop(e, cellKey);
-                    
+
                     grid.appendChild(cell);
                 }
             }
-            
+
             updateTerrainCounter();
         }
 
@@ -2493,13 +3347,44 @@
 
         // ========== STEP 3: STRATEGY MAP ==========
         function renderStrategyMap() {
-            const grid = $('strategyMapGrid');
+            const container = $('strategyMapContainer');
             const size = $('strategyMapSlider').value;
-            const cellSize = size;
-            
+            const cellSize = parseInt(size);
+
+            // Rebuild container structure based on coord state
+            if (state.showGridCoords) {
+                container.innerHTML = `
+                    <div class="map-with-coords">
+                        <div class="coord-col-headers" id="stratCoordCols"></div>
+                        <div class="coord-row-body">
+                            <div class="coord-row-labels" id="stratCoordRows"></div>
+                            <div class="map-grid" id="strategyMapGrid"></div>
+                        </div>
+                    </div>`;
+                const colHeaders = $('stratCoordCols');
+                for (let c = 0; c < state.mapCols; c++) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'coord-col-label';
+                    lbl.style.width = cellSize + 'px';
+                    lbl.textContent = String.fromCharCode(65 + c);
+                    colHeaders.appendChild(lbl);
+                }
+                const rowLabels = $('stratCoordRows');
+                for (let r = 0; r < state.mapRows; r++) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'coord-row-label';
+                    lbl.style.height = cellSize + 'px';
+                    lbl.textContent = r + 1;
+                    rowLabels.appendChild(lbl);
+                }
+            } else {
+                container.innerHTML = `<div class="map-grid" id="strategyMapGrid"></div>`;
+            }
+
+            const grid = $('strategyMapGrid');
             grid.style.gridTemplateColumns = `repeat(${state.mapCols}, ${cellSize}px)`;
             grid.style.gridTemplateRows = `repeat(${state.mapRows}, ${cellSize}px)`;
-            
+
             grid.innerHTML = '';
             let cellIdx = 0;
             
@@ -2552,6 +3437,29 @@
                     cellIdx++;
                 }
             }
+        }
+
+        function toggleGridCoords(checked) {
+            state.showGridCoords = checked;
+            // Keep both checkboxes in sync
+            ['gridCoordsToggle2', 'gridCoordsToggle3'].forEach(id => {
+                const el = $(id);
+                if (el) el.checked = checked;
+            });
+            renderMap();
+            renderStrategyMap();
+        }
+
+        function applyTeamMode(isTeam) {
+            state.teamMode = isTeam;
+            // Update text content of tagged elements
+            document.querySelectorAll('[data-solo]').forEach(el => {
+                el.textContent = isTeam ? el.dataset.team : el.dataset.solo;
+            });
+            // Update placeholders of tagged elements
+            document.querySelectorAll('[data-solo-placeholder]').forEach(el => {
+                el.placeholder = isTeam ? el.dataset.teamPlaceholder : el.dataset.soloPlaceholder;
+            });
         }
 
         function renderEquipmentInventory() {
@@ -2736,22 +3644,56 @@
         }
 
         function exportNotes() {
+            const strengthLines = state.strengthCards.map((c, i) =>
+                `  ${i + 1}. ${c.title}${c.descriptor ? ' — ' + c.descriptor : ''}`
+            ).join('\n') || '  (No strengths named yet)';
+
             const notes = `NARRAWAY - MY JOURNEY NOTES
 ============================
 
 MY STRENGTHS
 ------------
-${$('notes1').value || '(No notes recorded)'}
+Survey Responses:
+${$('surveyResponses').value || '(Not recorded)'}
+
+Self-Reflection:
+${$('selfReflection').value || '(Not recorded)'}
+
+Patterns Spotted:
+${$('patternsSpotted').value || '(Not recorded)'}
+
+My Strengths:
+${strengthLines}
+
+I am at my best when:
+${$('strengthsSummary').value || '(Not recorded)'}
 
 
 MY JOURNEY
 ----------
-${$('notes2').value || '(No notes recorded)'}
+Where I am right now:
+${$('notes2Left').value || '(No notes recorded)'}
+
+What lies in between:
+${$('notes2Centre').value || '(No notes recorded)'}
+
+Where I want to go:
+${$('notes2Right').value || '(No notes recorded)'}
 
 
 MY STRATEGY
 -----------
+My strengths will help me...
 ${$('notes3').value || '(No notes recorded)'}
+
+MY THREE MOVES
+--------------
+${[1, 2, 3].map(n => `Move ${n}:
+  The Move: ${$(`move${n}Move`).value || '(not filled)'}
+  Strengths I'm using: ${$(`move${n}Strengths`).value || '(not filled)'}
+  When and where: ${$(`move${n}WhenWhere`).value || '(not filled)'}
+  If I get stuck: ${$(`move${n}IfStuck`).value || '(not filled)'}
+  Checkpoint: ${$(`move${n}Checkpoint`).value || '(not filled)'}`).join('\n\n')}
 
 
 ============================
@@ -2933,6 +3875,16 @@ Created with NarraWay`;
 
         function resetJourney() {
             state.selectedEquipment.clear();
+            state.strengthsList = [];
+            state.strengthCards = [];
+            state.showGridCoords = false;
+            ['gridCoordsToggle2', 'gridCoordsToggle3'].forEach(id => {
+                const el = $(id);
+                if (el) el.checked = false;
+            });
+            applyTeamMode(false);
+            const teamToggle = $('teamModeToggle');
+            if (teamToggle) teamToggle.checked = false;
             state.mapCols = 4;
             state.mapRows = 3;
             state.placedTerrain = {};
@@ -2941,22 +3893,38 @@ Created with NarraWay`;
             Object.keys(TERRAIN_CARDS).forEach(key => {
                 state.terrainUsage[key] = 0;
             });
-            
-            $('notes1').value = '';
-            $('notes2').value = '';
+
+            $('surveyResponses').value = '';
+            $('selfReflection').value = '';
+            $('patternsSpotted').value = '';
+            $('strengthsSummary').value = '';
+            updateStrengthsSummaryWordCount();
+            $('notes2Left').value = '';
+            $('notes2Centre').value = '';
+            $('notes2Right').value = '';
             $('notes3').value = '';
-            
+            updateMapNotesWordCounts();
+            updateNotes3WordCount();
+
+            // Clear moves
+            [1, 2, 3].forEach(n => {
+                ['Move', 'Strengths', 'WhenWhere', 'IfStuck', 'Checkpoint'].forEach(field => {
+                    $(`move${n}${field}`).value = '';
+                });
+            });
+
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.cols === '4' && btn.dataset.rows === '3');
             });
-            
-            renderEquipmentGallery();
-            renderSelectedEquipment();
+
+            renderStrengthsList();
+            renderStrengthSlots();
+            renderAssignmentGallery();
             renderTerrainGallery();
             renderMap();
-            updateEquipmentCounter();
+            updateStrengthCounter();
             updateContinueButton();
-            
+
             goToStep(1);
             $('welcomeModal').classList.remove('hidden');
             $('confirmModal').classList.add('hidden');
@@ -3066,6 +4034,8 @@ Created with NarraWay`;
             $('confirmJourneyName').onclick = async () => {
                 const nameInput = document.getElementById('welcomeJourneyName');
                 const name = (nameInput && nameInput.value.trim()) || getDefaultJourneyName();
+                const teamToggle = $('teamModeToggle');
+                applyTeamMode(teamToggle ? teamToggle.checked : false);
                 autosaveJourneyName = name;
                 $('journeyNameModal').classList.add('hidden');
                 // Trigger first autosave to create the journey in the database
@@ -3092,8 +4062,21 @@ Created with NarraWay`;
                 $(`stepDot${i}`).onclick = () => goToStep(i);
             }
             
-            // Equipment gallery size
-            $('equipmentSizeSlider').oninput = renderEquipmentGallery;
+            // Step 1 — strength name input: Enter key submits
+            $('strengthNameInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') addStrength();
+            });
+
+            // Step 1 — strengths summary word count
+            $('strengthsSummary').addEventListener('input', updateStrengthsSummaryWordCount);
+
+            // Map notes word counts
+            ['notes2Left', 'notes2Centre', 'notes2Right'].forEach(id => {
+                $(id).addEventListener('input', updateMapNotesWordCounts);
+            });
+
+            // Notes3 word count
+            $('notes3').addEventListener('input', updateNotes3WordCount);
             
             // Terrain gallery size
             $('terrainSizeSlider').oninput = renderTerrainGallery;
@@ -3165,26 +4148,89 @@ Created with NarraWay`;
                 terrainBuffer: { ...state.terrainBuffer },
                 terrainUsage: { ...state.terrainUsage },
                 placedEquipment: { ...state.placedEquipment },
-                notes1: document.getElementById('notes1').value,
-                notes2: document.getElementById('notes2').value,
-                notes3: document.getElementById('notes3').value
+                showGridCoords: state.showGridCoords,
+                teamMode: state.teamMode,
+                // Step 1 — new fields
+                surveyResponses: document.getElementById('surveyResponses').value,
+                selfReflection: document.getElementById('selfReflection').value,
+                patternsSpotted: document.getElementById('patternsSpotted').value,
+                strengthsList: [...state.strengthsList],
+                strengthCards: state.strengthCards.map(c => ({ ...c })),
+                strengthsSummary: document.getElementById('strengthsSummary').value,
+                notes2Left: document.getElementById('notes2Left').value,
+                notes2Centre: document.getElementById('notes2Centre').value,
+                notes2Right: document.getElementById('notes2Right').value,
+                notes3: document.getElementById('notes3').value,
+                moves: [1, 2, 3].map(n => ({
+                    move: document.getElementById(`move${n}Move`).value,
+                    strengths: document.getElementById(`move${n}Strengths`).value,
+                    whenWhere: document.getElementById(`move${n}WhenWhere`).value,
+                    ifStuck: document.getElementById(`move${n}IfStuck`).value,
+                    checkpoint: document.getElementById(`move${n}Checkpoint`).value
+                }))
             };
         }
 
         // Load state from saved data
         function loadStateData(data) {
             state.currentStep = data.currentStep || 1;
-            state.selectedEquipment = new Set(data.selectedEquipment || []);
             state.mapCols = data.mapCols || 4;
             state.mapRows = data.mapRows || 3;
             state.placedTerrain = data.placedTerrain || {};
             state.terrainBuffer = data.terrainBuffer || {};
             state.terrainUsage = data.terrainUsage || {};
             state.placedEquipment = data.placedEquipment || {};
+            state.showGridCoords = data.showGridCoords || false;
+            ['gridCoordsToggle2', 'gridCoordsToggle3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.checked = state.showGridCoords;
+            });
+            applyTeamMode(data.teamMode || false);
+            const teamToggle = document.getElementById('teamModeToggle');
+            if (teamToggle) teamToggle.checked = state.teamMode;
 
-            document.getElementById('notes1').value = data.notes1 || '';
-            document.getElementById('notes2').value = data.notes2 || '';
+            // Step 1 — new fields
+            state.strengthsList = data.strengthsList || [];
+            state.strengthCards = data.strengthCards || [];
+
+            // Backward compat: if old save had selectedEquipment but no strengthCards,
+            // rebuild strengthCards from selectedEquipment so the user doesn't lose cards
+            if (state.strengthCards.length === 0 && data.selectedEquipment && data.selectedEquipment.length > 0) {
+                state.strengthsList = data.selectedEquipment.map((_, i) => `Strength ${i + 1}`);
+                state.strengthCards = data.selectedEquipment.map((cardId, i) => ({
+                    name: `Strength ${i + 1}`,
+                    cardId: cardId,
+                    title: `Strength ${i + 1}`,
+                    descriptor: ''
+                }));
+            }
+
+            // Derive selectedEquipment from strengthCards
+            syncSelectedEquipment();
+
+            document.getElementById('surveyResponses').value = data.surveyResponses || '';
+            document.getElementById('selfReflection').value = data.selfReflection || '';
+            document.getElementById('patternsSpotted').value = data.patternsSpotted || '';
+            // Backward compat: old saves had notes1, treat as strengthsSummary
+            document.getElementById('strengthsSummary').value = data.strengthsSummary || data.notes1 || '';
+            updateStrengthsSummaryWordCount();
+            document.getElementById('notes2Left').value = data.notes2Left || data.notes2 || '';
+            document.getElementById('notes2Centre').value = data.notes2Centre || '';
+            document.getElementById('notes2Right').value = data.notes2Right || '';
             document.getElementById('notes3').value = data.notes3 || '';
+            updateMapNotesWordCounts();
+            updateNotes3WordCount();
+
+            // Restore moves
+            const moves = data.moves || [{}, {}, {}];
+            [1, 2, 3].forEach((n, i) => {
+                const m = moves[i] || {};
+                document.getElementById(`move${n}Move`).value = m.move || '';
+                document.getElementById(`move${n}Strengths`).value = m.strengths || '';
+                document.getElementById(`move${n}WhenWhere`).value = m.whenWhere || '';
+                document.getElementById(`move${n}IfStuck`).value = m.ifStuck || '';
+                document.getElementById(`move${n}Checkpoint`).value = m.checkpoint || '';
+            });
 
             // Update map size buttons
             document.querySelectorAll('.size-btn').forEach(btn => {
@@ -3194,9 +4240,10 @@ Created with NarraWay`;
             });
 
             // Re-render all views
-            renderEquipmentGallery();
-            renderSelectedEquipment();
-            updateEquipmentCounter();
+            renderStrengthsList();
+            renderStrengthSlots();
+            renderAssignmentGallery();
+            updateStrengthCounter();
             updateContinueButton();
             renderTerrainGallery();
             renderMap();
