@@ -6,6 +6,8 @@
     <title>NarraWay - Your Journey Map</title>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const SUPABASE_URL = 'https://kttkvmpmxpcjtpkgnkrm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_xzBItzTd25jdDL5w7bC8-Q_xZ35H_MG';
@@ -2314,7 +2316,7 @@
             </div>
 
             <div class="panel nav-panel">
-                <div></div>
+                <button class="btn btn-secondary" id="exportStep1Btn" onclick="exportStep1PDF()" style="font-size:0.85rem;">📄 EXPORT PROFILE</button>
                 <button class="btn btn-primary" id="continueToStep2" disabled>CONTINUE TO MAPPING →</button>
             </div>
         </div>
@@ -2436,6 +2438,7 @@
 
             <div class="panel nav-panel">
                 <button class="btn btn-secondary" id="backToStep1">← BACK TO EQUIPMENT</button>
+                <button class="btn btn-secondary" id="exportStep2Btn" onclick="exportStep2PDF()" style="font-size:0.85rem;">📄 EXPORT MAP</button>
                 <button class="btn btn-primary" id="continueToStep3" disabled>CONTINUE TO STRATEGY →</button>
             </div>
         </div>
@@ -2614,6 +2617,7 @@
 
             <div class="panel nav-panel">
                 <button class="btn btn-secondary" id="backToStep2">← BACK TO MAPPING</button>
+                <button class="btn btn-secondary" id="exportStep3Btn" onclick="exportStep3PDF()" style="font-size:0.85rem;">📄 EXPORT STRATEGY</button>
                 <button class="btn btn-primary" id="continueToStep4">CONTINUE TO EXPORT →</button>
             </div>
         </div>
@@ -2666,10 +2670,27 @@
                 </div>
             </div>
 
+            <!-- PDF Export Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📄</span>
+                    <span class="panel-title">Export PDF Report</span>
+                </div>
+                <div style="padding: 8px 0 16px;">
+                    <p style="margin-bottom: 16px; color: var(--color-text);">Export your NarraWay journey as a beautifully designed PDF — ideal for reflection, sharing or printing.</p>
+                    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 420px;">
+                        <button class="btn btn-primary" id="exportFullReportBtn" onclick="exportFullReportPDF()" style="font-size: 1rem;">📄 EXPORT FULL REPORT (8-page PDF)</button>
+                        <button class="btn btn-secondary" id="exportLandscapeMapsBtn" onclick="exportLandscapeMapsPDF()" style="font-size: 1rem;">🗺️ EXPORT LANDSCAPE MAPS (PDF)</button>
+                    </div>
+                    <p style="margin-top: 12px; font-size: 0.8rem; color: #888;">Full report: 8-page A4 PDF with all your strengths, maps and strategy. Landscape maps: large visual-only prints of both maps.</p>
+                </div>
+            </div>
+
+            <!-- Quick Export Options (image / notes) -->
             <div class="panel">
                 <div class="panel-header">
                     <span class="panel-icon">⚙️</span>
-                    <span class="panel-title">Export Options</span>
+                    <span class="panel-title">Quick Image Export</span>
                 </div>
                 <div class="export-options">
                     <label class="checkbox-label">
@@ -4859,6 +4880,748 @@ Created with NarraWay`;
 
         // Initial auth check
         checkAuthAndPayment();
+    </script>
+
+    <!-- ========== PDF EXPORT ========== -->
+    <script>
+    // Constants for PDF canvas dimensions (portrait: 1014×1434, landscape: 1434×1014)
+    const PD = {
+        W: 1014, H: 1434,
+        LW: 1434, LH: 1014,
+        M: 56,
+        CW: 902,        // content width = W - 2*M
+        BAR: 6,         // amber bar height
+        HDR: 88,        // header band height
+        AMBER: '#E4A625',
+        GREEN: '#3D7340',
+        TEAL: '#2D7A8C',
+        PARCH: '#F8EDD4',
+        TEXT: '#1C1208',
+        BROWN: '#785F41',
+        GREY: '#D2CDC6',
+    };
+
+    function _pc(w, h) {
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        return c;
+    }
+
+    function _bars(ctx, w, h) {
+        ctx.fillStyle = PD.AMBER;
+        ctx.fillRect(0, 0, w, PD.BAR);
+        ctx.fillRect(0, h - PD.BAR, w, PD.BAR);
+    }
+
+    function _header(ctx, w, color, title) {
+        ctx.fillStyle = color;
+        ctx.fillRect(0, PD.BAR, w, PD.HDR);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 30px Poppins, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(title, PD.M, PD.BAR + PD.HDR / 2 + 11);
+        ctx.font = '600 17px Poppins, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('NarraWay', w - PD.M, PD.BAR + PD.HDR / 2 + 8);
+        ctx.textAlign = 'left';
+    }
+
+    function _rrect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(x, y, w, h, r);
+        } else {
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+    }
+
+    function _parchBox(ctx, x, y, w, h, r) {
+        _rrect(ctx, x, y, w, h, r || 14);
+        ctx.fillStyle = PD.PARCH;
+        ctx.fill();
+        ctx.strokeStyle = PD.GREY;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+
+    // Wrap text, return Y after last line
+    function _wrap(ctx, text, x, y, maxW, lineH) {
+        if (!text || !text.trim()) return y;
+        const paras = text.split('\n');
+        let curY = y;
+        for (const para of paras) {
+            if (!para.trim()) { curY += lineH * 0.5; continue; }
+            const words = para.split(' ');
+            let line = '';
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxW && line) {
+                    ctx.fillText(line, x, curY);
+                    line = word;
+                    curY += lineH;
+                } else {
+                    line = test;
+                }
+            }
+            if (line) ctx.fillText(line, x, curY);
+            curY += lineH;
+        }
+        return curY;
+    }
+
+    // Count lines needed for text wrapping
+    function _countLines(ctx, text, maxW) {
+        if (!text || !text.trim()) return 0;
+        let count = 0;
+        for (const para of text.split('\n')) {
+            if (!para.trim()) { count += 0.5; continue; }
+            const words = para.split(' ');
+            let line = '';
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxW && line) { count++; line = word; }
+                else line = test;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    // Draw terrain map (+ optional equipment) onto ctx at (x,y) filling mapW wide
+    // Returns { ts, actualH }
+    async function _drawMap(ctx, x, y, mapW, includeEq) {
+        const cols = state.mapCols;
+        const rows = state.mapRows;
+        const ts = mapW / cols;
+        const actualH = ts * rows;
+
+        ctx.fillStyle = PD.PARCH;
+        ctx.fillRect(x, y, mapW, actualH);
+
+        // Terrain tiles
+        const tp = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const tk = state.placedTerrain[`${r}-${c}`];
+                if (!tk) continue;
+                const px = x + c * ts, py = y + r * ts;
+                tp.push(new Promise(res => {
+                    const img = new Image();
+                    img.onload = () => { ctx.drawImage(img, px, py, ts, ts); res(); };
+                    img.onerror = res;
+                    img.src = TERRAIN_CARDS[tk].img;
+                }));
+            }
+        }
+        await Promise.all(tp);
+
+        // Grid lines
+        ctx.strokeStyle = 'rgba(59,42,26,0.3)';
+        ctx.lineWidth = 1;
+        for (let c = 0; c <= cols; c++) {
+            ctx.beginPath(); ctx.moveTo(x + c * ts, y); ctx.lineTo(x + c * ts, y + actualH); ctx.stroke();
+        }
+        for (let r = 0; r <= rows; r++) {
+            ctx.beginPath(); ctx.moveTo(x, y + r * ts); ctx.lineTo(x + mapW, y + r * ts); ctx.stroke();
+        }
+
+        if (includeEq) {
+            const ep = [];
+            let ci = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const bx = x + c * ts, by = y + r * ts;
+                    const slots = [
+                        [bx + ts * .25, by + ts * .25],
+                        [bx + ts * .75, by + ts * .25],
+                        [bx + ts * .25, by + ts * .75],
+                        [bx + ts * .75, by + ts * .75],
+                    ];
+                    for (let s = 0; s < 4; s++) {
+                        const ek = state.placedEquipment[`${ci}-${s}`];
+                        if (!ek) continue;
+                        const [cx_, cy_] = slots[s];
+                        const rad = ts * 0.175;
+                        ep.push(new Promise(res => {
+                            const img = new Image();
+                            img.onload = () => {
+                                ctx.beginPath(); ctx.arc(cx_, cy_, rad + 2, 0, Math.PI * 2);
+                                ctx.fillStyle = PD.PARCH; ctx.fill();
+                                ctx.strokeStyle = '#8B5A2B'; ctx.lineWidth = 2; ctx.stroke();
+                                ctx.save(); ctx.beginPath(); ctx.arc(cx_, cy_, rad, 0, Math.PI * 2); ctx.clip();
+                                ctx.drawImage(img, cx_ - rad, cy_ - rad, rad * 2, rad * 2);
+                                ctx.restore(); res();
+                            };
+                            img.onerror = res;
+                            img.src = EQUIPMENT_CARDS[ek];
+                        }));
+                    }
+                    ci++;
+                }
+            }
+            await Promise.all(ep);
+        }
+        return { ts, actualH };
+    }
+
+    // Draw a circular equipment card image
+    async function _circ(ctx, cx, cy, r, cardId) {
+        if (!cardId || !EQUIPMENT_CARDS[cardId]) return;
+        return new Promise(res => {
+            const img = new Image();
+            img.onload = () => {
+                ctx.beginPath(); ctx.arc(cx, cy, r + 3, 0, Math.PI * 2);
+                ctx.fillStyle = PD.PARCH; ctx.fill();
+                ctx.strokeStyle = '#8B5A2B'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+                ctx.drawImage(img, cx - r, cy - r, r * 2, r * 2);
+                ctx.restore(); res();
+            };
+            img.onerror = res;
+            img.src = EQUIPMENT_CARDS[cardId];
+        });
+    }
+
+    // Cached logo
+    let _pdfLogo = null;
+    function _loadLogo() {
+        if (_pdfLogo) return Promise.resolve(_pdfLogo);
+        return new Promise(res => {
+            const img = new Image();
+            img.onload = () => { _pdfLogo = img; res(img); };
+            img.onerror = () => res(null);
+            img.src = LOGOS.transparent;
+        });
+    }
+
+    // Safe field value getter
+    const _fv = id => (document.getElementById(id) || {}).value || '';
+
+    // Safe journey name
+    function _jName() {
+        return (typeof autosaveJourneyName !== 'undefined' && autosaveJourneyName) ? autosaveJourneyName : 'My Journey';
+    }
+
+    // ---- PAGE BUILDERS ----
+
+    // Page 1: Title Page
+    async function _page1() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+
+        const mapTopY = PD.BAR + 72;
+        const ts = PD.CW / state.mapCols;
+        const { actualH: mapH } = await _drawMap(ctx, PD.M, mapTopY, PD.CW, true);
+        ctx.strokeStyle = 'rgba(59,42,26,0.4)'; ctx.lineWidth = 2;
+        ctx.strokeRect(PD.M, mapTopY, PD.CW, mapH);
+
+        const logo = await _loadLogo();
+        const logoW = 280;
+        const logoH = logo ? logo.height * (logoW / logo.width) : 0;
+        const lowerStart = mapTopY + mapH + 20;
+        const lowerEnd = PD.H - PD.BAR;
+        const lowerH = lowerEnd - lowerStart;
+        const nameSize = 50, labelSize = 26, userSize = 22;
+        const totalH = nameSize + 20 + labelSize + 18 + userSize + 28 + logoH;
+        let curY = lowerStart + Math.max(20, (lowerH - totalH) / 2);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = PD.TEXT;
+        ctx.font = `bold ${nameSize}px Poppins, sans-serif`;
+        ctx.fillText(_jName(), PD.W / 2, curY + nameSize);
+        curY += nameSize + 20;
+
+        ctx.fillStyle = PD.AMBER;
+        ctx.font = `600 ${labelSize}px Poppins, sans-serif`;
+        ctx.fillText('Strategic Plan for', PD.W / 2, curY + labelSize);
+        curY += labelSize + 18;
+
+        const userEmail = (typeof currentUser !== 'undefined' && currentUser) ? (currentUser.email || '') : '';
+        ctx.fillStyle = PD.TEXT;
+        ctx.font = `400 ${userSize}px "Source Sans Pro", sans-serif`;
+        ctx.fillText(userEmail, PD.W / 2, curY + userSize);
+        curY += userSize + 28;
+
+        if (logo) ctx.drawImage(logo, (PD.W - logoW) / 2, curY, logoW, logoH);
+        ctx.textAlign = 'left';
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 2: Survey Responses & Reflections
+    async function _page2() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.AMBER, 'Survey Responses & Reflections');
+
+        const pad = 24, lineH = 26;
+        let y = PD.BAR + PD.HDR + 32;
+        const sections = [
+            { label: 'Survey Responses', value: _fv('surveyResponses') },
+            { label: 'Self-Reflection', value: _fv('selfReflection') },
+            { label: 'Patterns Spotted', value: _fv('patternsSpotted') },
+        ];
+
+        for (const sec of sections) {
+            ctx.fillStyle = PD.BROWN;
+            ctx.font = '600 19px Poppins, sans-serif';
+            ctx.fillText(sec.label, PD.M, y + 14);
+            y += 28;
+
+            const textW = PD.CW - pad * 2;
+            const body = sec.value || '(Not completed)';
+            ctx.font = '400 18px "Source Sans Pro", sans-serif';
+            const lines = _countLines(ctx, body, textW);
+            const boxH = Math.max(80, pad + Math.ceil(lines) * lineH + pad);
+
+            _parchBox(ctx, PD.M, y, PD.CW, boxH);
+            ctx.fillStyle = PD.TEXT;
+            _wrap(ctx, body, PD.M + pad, y + pad + 14, textW, lineH);
+            y += boxH + 20;
+        }
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 3: Key Strengths
+    async function _page3() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.AMBER, 'Key Strengths');
+
+        const cards = state.strengthCards.filter(sc => sc.cardId);
+        if (cards.length === 0) {
+            ctx.fillStyle = PD.TEXT; ctx.font = '400 20px "Source Sans Pro", sans-serif';
+            ctx.fillText('No strength cards assigned yet.', PD.M, PD.BAR + PD.HDR + 60);
+            return c.toDataURL('image/jpeg', 0.92);
+        }
+
+        const numCols = 3;
+        const cellW = PD.CW / numCols;
+        const imgR = 44;
+        const cellH = 230;
+        const gap = 16;
+        const startY = PD.BAR + PD.HDR + 32;
+        const dp = [];
+
+        for (let i = 0; i < cards.length; i++) {
+            const sc = cards[i];
+            const col = i % numCols;
+            const row = Math.floor(i / numCols);
+            const bx = PD.M + col * cellW;
+            const by = startY + row * (cellH + gap);
+            const pad = 12;
+
+            _parchBox(ctx, bx, by, cellW - 8, cellH);
+            const cardCx = bx + cellW / 2 - 4;
+            const cardCy = by + pad + imgR;
+            dp.push(_circ(ctx, cardCx, cardCy, imgR, sc.cardId));
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = PD.TEXT;
+            ctx.font = 'bold 18px Poppins, sans-serif';
+            const titleY = by + pad + imgR * 2 + 22;
+            ctx.fillText(sc.title || sc.name, cardCx, titleY);
+
+            if (sc.descriptor) {
+                ctx.fillStyle = PD.BROWN;
+                ctx.font = '400 14px "Source Sans Pro", sans-serif';
+                ctx.textAlign = 'left';
+                _wrap(ctx, sc.descriptor, bx + pad, titleY + 22, cellW - 8 - pad * 2, 19);
+            }
+            ctx.textAlign = 'left';
+        }
+
+        await Promise.all(dp);
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 4: Strengths Summary
+    async function _page4() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.AMBER, 'Strengths Summary');
+
+        const pad = 32, lineH = 30;
+        const startY = PD.BAR + PD.HDR + 40;
+        const textW = PD.CW - pad * 2;
+        const body = _fv('strengthsSummary') || '(Not completed)';
+
+        ctx.font = '400 20px "Source Sans Pro", sans-serif';
+        const lines = _countLines(ctx, body, textW);
+        const boxH = pad + 50 + Math.ceil(lines) * lineH + pad;
+
+        _parchBox(ctx, PD.M, startY, PD.CW, boxH);
+        ctx.fillStyle = PD.AMBER;
+        ctx.font = 'bold 24px Poppins, sans-serif';
+        ctx.fillText('I am at my best when...', PD.M + pad, startY + pad + 24);
+        ctx.fillStyle = PD.TEXT;
+        ctx.font = '400 20px "Source Sans Pro", sans-serif';
+        _wrap(ctx, body, PD.M + pad, startY + pad + 24 + 40, textW, lineH);
+
+        // Decorative row of card images
+        const cards = state.strengthCards.filter(sc => sc.cardId);
+        if (cards.length > 0) {
+            const imgR = 34;
+            const rowY = startY + boxH + 44;
+            const totalW = cards.length * (imgR * 2 + 12) - 12;
+            const startX = PD.M + (PD.CW - totalW) / 2;
+            const dp = cards.map((sc, i) =>
+                _circ(ctx, startX + i * (imgR * 2 + 12) + imgR, rowY + imgR, imgR, sc.cardId)
+            );
+            await Promise.all(dp);
+        }
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 5: Map of The Journey Ahead + Journey Logbook
+    async function _page5() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.GREEN, 'Map of The Journey Ahead');
+
+        const mapTopY = PD.BAR + PD.HDR + 16;
+        const { actualH: mapH } = await _drawMap(ctx, PD.M, mapTopY, PD.CW, false);
+        ctx.strokeStyle = 'rgba(59,42,26,0.4)'; ctx.lineWidth = 2;
+        ctx.strokeRect(PD.M, mapTopY, PD.CW, mapH);
+
+        let y = mapTopY + mapH + 24;
+        const pad = 20, lineH = 24;
+        const textW = PD.CW - pad * 2;
+        const sections = [
+            { label: 'Where I am right now...', value: _fv('notes2Left') },
+            { label: 'What lies in between...', value: _fv('notes2Centre') },
+            { label: 'Where I want to go...', value: _fv('notes2Right') },
+        ];
+
+        for (const sec of sections) {
+            ctx.fillStyle = PD.BROWN;
+            ctx.font = '600 17px Poppins, sans-serif';
+            ctx.fillText(sec.label, PD.M, y + 14);
+            y += 24;
+
+            const body = sec.value || '(Not completed)';
+            ctx.font = '400 17px "Source Sans Pro", sans-serif';
+            const lines = _countLines(ctx, body, textW);
+            const boxH = Math.max(60, pad + Math.ceil(lines) * lineH + pad);
+            _parchBox(ctx, PD.M, y, PD.CW, boxH);
+            ctx.fillStyle = PD.TEXT;
+            _wrap(ctx, body, PD.M + pad, y + pad + 13, textW, lineH);
+            y += boxH + 14;
+        }
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 6: Strengths Map & Strategy
+    async function _page6() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.TEAL, 'Strengths Map & Strategy');
+
+        const mapTopY = PD.BAR + PD.HDR + 16;
+        const { actualH: mapH } = await _drawMap(ctx, PD.M, mapTopY, PD.CW, true);
+        ctx.strokeStyle = 'rgba(59,42,26,0.4)'; ctx.lineWidth = 2;
+        ctx.strokeRect(PD.M, mapTopY, PD.CW, mapH);
+
+        let y = mapTopY + mapH + 24;
+        const pad = 24, lineH = 28;
+        const textW = PD.CW - pad * 2;
+        const body = _fv('notes3') || '(Not completed)';
+        ctx.font = '400 20px "Source Sans Pro", sans-serif';
+        const lines = _countLines(ctx, body, textW);
+        const boxH = Math.max(100, pad + 48 + Math.ceil(lines) * lineH + pad);
+
+        _parchBox(ctx, PD.M, y, PD.CW, boxH);
+        ctx.fillStyle = PD.TEAL;
+        ctx.font = 'bold 22px Poppins, sans-serif';
+        ctx.fillText('My strengths will help me...', PD.M + pad, y + pad + 22);
+        ctx.fillStyle = PD.TEXT;
+        ctx.font = '400 20px "Source Sans Pro", sans-serif';
+        _wrap(ctx, body, PD.M + pad, y + pad + 22 + 40, textW, lineH);
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 7: My Three Moves
+    async function _page7() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+        _header(ctx, PD.W, PD.TEAL, 'My Three Moves');
+
+        const gap = 14;
+        const cardW = (PD.CW - gap * 2) / 3;
+        const cardY = PD.BAR + PD.HDR + PD.M;
+        const cardH = PD.H - cardY - PD.BAR - PD.M;
+        const cardXs = [PD.M, PD.M + cardW + gap, PD.M + (cardW + gap) * 2];
+
+        const moves = [1, 2, 3].map((n, i) => ({
+            move: _fv(`move${n}Move`),
+            strengths: _fv(`move${n}Strengths`),
+            whenWhere: _fv(`move${n}WhenWhere`),
+            ifStuck: _fv(`move${n}IfStuck`),
+            checkpoint: _fv(`move${n}Checkpoint`),
+            cardId: state.strengthCards[i] ? state.strengthCards[i].cardId : null,
+        }));
+
+        const fieldKeys = ['move', 'strengths', 'whenWhere', 'ifStuck', 'checkpoint'];
+        const fieldLabels = ['The Move', 'The Strength/s I\'m Using', 'When and Where', 'If I Get Stuck', 'Checkpoint'];
+        const dp = [];
+
+        for (let i = 0; i < 3; i++) {
+            const m = moves[i];
+            const cx = cardXs[i];
+            _parchBox(ctx, cx, cardY, cardW, cardH);
+
+            const pad = 18;
+            const innerW = cardW - pad * 2;
+            let cy = cardY + pad;
+
+            ctx.fillStyle = PD.TEAL;
+            ctx.font = 'bold 22px Poppins, sans-serif';
+            ctx.fillText(`Move ${i + 1}`, cx + pad, cy + 22);
+            cy += 38;
+
+            ctx.strokeStyle = PD.GREY; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx + pad, cy); ctx.lineTo(cx + cardW - pad, cy); ctx.stroke();
+            cy += 14;
+
+            const lineH = 19;
+            for (let fi = 0; fi < fieldKeys.length; fi++) {
+                const val = m[fieldKeys[fi]] || '—';
+                ctx.fillStyle = PD.BROWN;
+                ctx.font = '600 13px Poppins, sans-serif';
+                ctx.fillText(fieldLabels[fi], cx + pad, cy + 13);
+                cy += 20;
+                ctx.fillStyle = PD.TEXT;
+                ctx.font = '400 14px "Source Sans Pro", sans-serif';
+                cy = _wrap(ctx, val, cx + pad, cy + 14, innerW, lineH);
+                cy += 8;
+            }
+
+            if (m.cardId) {
+                const cardR = 28;
+                const cardCx = cx + cardW - pad - cardR;
+                const cardCy = cardY + cardH - pad - cardR;
+                dp.push(_circ(ctx, cardCx, cardCy, cardR, m.cardId));
+            }
+        }
+
+        await Promise.all(dp);
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Page 8: Closing Page
+    async function _page8() {
+        const c = _pc(PD.W, PD.H);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.W, PD.H);
+        _bars(ctx, PD.W, PD.H);
+
+        const bandH = 80;
+        ctx.fillStyle = PD.AMBER;
+        ctx.fillRect(0, PD.BAR, PD.W, bandH);
+        ctx.fillRect(0, PD.H - PD.BAR - bandH, PD.W, bandH);
+
+        // L-shaped corner lines
+        const lLen = 56, lW = 4;
+        const innerTop = PD.BAR + bandH + 28;
+        const innerBottom = PD.H - PD.BAR - bandH - 28;
+        ctx.strokeStyle = PD.AMBER; ctx.lineWidth = lW;
+        // Top-left
+        ctx.beginPath(); ctx.moveTo(PD.M, innerTop); ctx.lineTo(PD.M, innerTop + lLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PD.M, innerTop); ctx.lineTo(PD.M + lLen, innerTop); ctx.stroke();
+        // Top-right
+        ctx.beginPath(); ctx.moveTo(PD.W - PD.M, innerTop); ctx.lineTo(PD.W - PD.M, innerTop + lLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PD.W - PD.M, innerTop); ctx.lineTo(PD.W - PD.M - lLen, innerTop); ctx.stroke();
+        // Bottom-left
+        ctx.beginPath(); ctx.moveTo(PD.M, innerBottom); ctx.lineTo(PD.M, innerBottom - lLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PD.M, innerBottom); ctx.lineTo(PD.M + lLen, innerBottom); ctx.stroke();
+        // Bottom-right
+        ctx.beginPath(); ctx.moveTo(PD.W - PD.M, innerBottom); ctx.lineTo(PD.W - PD.M, innerBottom - lLen); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PD.W - PD.M, innerBottom); ctx.lineTo(PD.W - PD.M - lLen, innerBottom); ctx.stroke();
+
+        const logo = await _loadLogo();
+        const logoW = 320;
+        const midY = (innerTop + innerBottom) / 2;
+        const logoH = logo ? logo.height * (logoW / logo.width) : 0;
+        let curY = midY - (logoH / 2 + 50);
+
+        if (logo) { ctx.drawImage(logo, (PD.W - logoW) / 2, curY, logoW, logoH); curY += logoH + 28; }
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = PD.TEAL;
+        ctx.font = '600 22px Poppins, sans-serif';
+        ctx.fillText('Discover Your Strengths. Navigate Your Journey.', PD.W / 2, curY + 22);
+        curY += 46;
+
+        ctx.fillStyle = PD.AMBER;
+        ctx.fillRect(PD.M, curY, PD.CW, 3);
+        curY += 22;
+
+        const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        ctx.fillStyle = PD.TEXT;
+        ctx.font = '400 16px "Source Sans Pro", sans-serif';
+        ctx.fillText(dateStr, PD.W / 2, curY + 16);
+        curY += 32;
+        ctx.fillStyle = PD.BROWN;
+        ctx.fillText('narraway.co.uk', PD.W / 2, curY + 16);
+
+        ctx.textAlign = 'left';
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Landscape 1: Terrain map only
+    async function _landscape1() {
+        const c = _pc(PD.LW, PD.LH);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.LW, PD.LH);
+
+        const logoH = 60;
+        const mapAreaH = PD.LH - logoH - 48;
+        const mapAreaW = PD.LW - PD.M * 2;
+        const ts = Math.min(mapAreaW / state.mapCols, mapAreaH / state.mapRows);
+        const mW = ts * state.mapCols;
+        const mH = ts * state.mapRows;
+        const mapX = (PD.LW - mW) / 2;
+        const mapY = (mapAreaH - mH) / 2 + 24;
+
+        await _drawMap(ctx, mapX, mapY, mW, false);
+        ctx.strokeStyle = 'rgba(59,42,26,0.4)'; ctx.lineWidth = 2;
+        ctx.strokeRect(mapX, mapY, mW, mH);
+
+        const logo = await _loadLogo();
+        if (logo) {
+            const lW = 180, lH = logo.height * (lW / logo.width);
+            ctx.drawImage(logo, (PD.LW - lW) / 2, PD.LH - logoH - 6, lW, lH);
+        }
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // Landscape 2: Strategy map (terrain + equipment)
+    async function _landscape2() {
+        const c = _pc(PD.LW, PD.LH);
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, PD.LW, PD.LH);
+
+        const logoH = 60;
+        const mapAreaH = PD.LH - logoH - 48;
+        const mapAreaW = PD.LW - PD.M * 2;
+        const ts = Math.min(mapAreaW / state.mapCols, mapAreaH / state.mapRows);
+        const mW = ts * state.mapCols;
+        const mH = ts * state.mapRows;
+        const mapX = (PD.LW - mW) / 2;
+        const mapY = (mapAreaH - mH) / 2 + 24;
+
+        await _drawMap(ctx, mapX, mapY, mW, true);
+        ctx.strokeStyle = 'rgba(59,42,26,0.4)'; ctx.lineWidth = 2;
+        ctx.strokeRect(mapX, mapY, mW, mH);
+
+        const logo = await _loadLogo();
+        if (logo) {
+            const lW = 180, lH = logo.height * (lW / logo.width);
+            ctx.drawImage(logo, (PD.LW - lW) / 2, PD.LH - logoH - 6, lW, lH);
+        }
+
+        return c.toDataURL('image/jpeg', 0.92);
+    }
+
+    // ---- PDF ASSEMBLER ----
+    async function _makePDF(portraitBuilders, landscapeBuilders, filename) {
+        const { jsPDF } = window.jspdf;
+        let pdf = null;
+        let first = true;
+
+        for (const build of portraitBuilders) {
+            const url = await build();
+            if (first) { pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }); first = false; }
+            else pdf.addPage('a4', 'portrait');
+            pdf.addImage(url, 'JPEG', 0, 0, 210, 297);
+        }
+
+        for (const build of (landscapeBuilders || [])) {
+            const url = await build();
+            if (first) { pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }); first = false; }
+            else pdf.addPage('a4', 'landscape');
+            pdf.addImage(url, 'JPEG', 0, 0, 297, 210);
+        }
+
+        if (pdf) pdf.save(filename);
+    }
+
+    // Button loading state
+    function _btnLoad(id, loading) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (loading) { btn.dataset.orig = btn.textContent; btn.textContent = '⏳ Generating...'; btn.disabled = true; }
+        else { btn.textContent = btn.dataset.orig || btn.textContent; btn.disabled = false; }
+    }
+
+    // ---- PUBLIC EXPORT FUNCTIONS ----
+
+    async function exportStep1PDF() {
+        _btnLoad('exportStep1Btn', true);
+        try {
+            await _makePDF([_page2, _page3, _page4], null, _jName().replace(/\s+/g, '-').toLowerCase() + '-strengths-profile.pdf');
+        } catch (e) { console.error(e); alert('PDF export failed: ' + e.message); }
+        _btnLoad('exportStep1Btn', false);
+    }
+
+    async function exportStep2PDF() {
+        _btnLoad('exportStep2Btn', true);
+        try {
+            await _makePDF([_page5], [_landscape1], _jName().replace(/\s+/g, '-').toLowerCase() + '-journey-map.pdf');
+        } catch (e) { console.error(e); alert('PDF export failed: ' + e.message); }
+        _btnLoad('exportStep2Btn', false);
+    }
+
+    async function exportStep3PDF() {
+        _btnLoad('exportStep3Btn', true);
+        try {
+            await _makePDF([_page6, _page7], [_landscape2], _jName().replace(/\s+/g, '-').toLowerCase() + '-strategy.pdf');
+        } catch (e) { console.error(e); alert('PDF export failed: ' + e.message); }
+        _btnLoad('exportStep3Btn', false);
+    }
+
+    async function exportFullReportPDF() {
+        _btnLoad('exportFullReportBtn', true);
+        try {
+            await _makePDF(
+                [_page1, _page2, _page3, _page4, _page5, _page6, _page7, _page8],
+                null,
+                _jName().replace(/\s+/g, '-').toLowerCase() + '-full-report.pdf'
+            );
+        } catch (e) { console.error(e); alert('PDF export failed: ' + e.message); }
+        _btnLoad('exportFullReportBtn', false);
+    }
+
+    async function exportLandscapeMapsPDF() {
+        _btnLoad('exportLandscapeMapsBtn', true);
+        try {
+            await _makePDF([], [_landscape1, _landscape2], _jName().replace(/\s+/g, '-').toLowerCase() + '-maps.pdf');
+        } catch (e) { console.error(e); alert('PDF export failed: ' + e.message); }
+        _btnLoad('exportLandscapeMapsBtn', false);
+    }
     </script>
 </body>
 </html>

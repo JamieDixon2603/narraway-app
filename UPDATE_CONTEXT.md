@@ -1,4 +1,4 @@
-# NarraWay — Update Context (Last updated: 6 April 2026)
+# NarraWay — Update Context (Last updated: 6 April 2026 — PDF Export session)
 
 Use this file to resume context in a new chat. Reference it at the start of the session.
 
@@ -24,8 +24,9 @@ Three outputs total:
 - [x] Step 3 — "My strengths will help me..." + 3 Moves cards ✅
 - [x] Step 1 — full rebuild (pre-work, list, card assignment, summary) ✅
 - [x] Grid Coordinates toggle ✅
-- [ ] Team Mode toggle ← **START HERE**
-- [ ] PDF Export — html2pdf.js implementation
+- [x] Team Mode toggle ✅
+- [x] Move card word limits (30 words per field) ✅
+- [x] PDF Export — jsPDF canvas-based implementation ✅
 
 ### How to resume in a new chat
 > "Please read UPDATE_CONTEXT.md in the App folder and let's continue the NarraWay redesign."
@@ -112,6 +113,26 @@ Full rebuild replacing the old click-to-select equipment gallery with a 6-sectio
 
 **New state fields:** `strengthsList[]`, `strengthCards[]` (each: `{name, cardId, title, descriptor}`)
 **New data fields saved:** `surveyResponses`, `selfReflection`, `patternsSpotted`, `strengthsList`, `strengthCards`, `strengthsSummary`
+
+---
+
+## What Was Built — Team Mode ✅
+
+A toggle in the journey name modal that switches all I/My/Me → We/Our/Us throughout the app.
+
+- **Checkbox:** "This is for a team" in the journey name modal, with hint text "(switches I/My to We/Our throughout)"
+- **`applyTeamMode(isTeam)`** — iterates `[data-solo]`/`[data-team]` elements (text content) and `[data-solo-placeholder]`/`[data-team-placeholder]` elements (placeholders)
+- **State field:** `teamMode: false` — saved, loaded, and reset correctly
+- **Elements that switch:** "I am at my best when..." / "Where I am right now..." / "Where I want to go..." / "My strengths will help me..." / "My Three Moves" / "The Strength/s I'm Using" / "If I Get Stuck" / all 15 move card placeholders
+
+## What Was Built — Move Card Word Limits ✅
+
+30-word hard cap on all 15 move card text fields (5 fields × 3 cards).
+
+- Uses existing `applyWordCountUI()` pattern — same amber/red counter behaviour
+- New function: `updateMoveWordCounts()` — called on input, load, and reset
+- Counter IDs: `move{n}{Field}Count` (e.g. `move1MoveCount`, `move2IfStuckCount`)
+- 15 event listeners added in `init()`
 
 ---
 
@@ -263,6 +284,39 @@ No separate app or URL. Team mode is a **toggle within the existing app**, shown
 **What stays the same:**
 - All field IDs, state keys, save format
 - PDF output (uses the same templates — pronoun changes are UI-only for now)
+
+---
+
+## What Was Built — PDF Export ✅
+
+Canvas-based PDF generation using jsPDF (CDN: `cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js`).
+
+**Library:** jsPDF via CDN (NOT html2pdf.js — canvas approach used instead for reliability)
+
+**Export buttons added:**
+- Step 1 nav-panel: "📄 EXPORT PROFILE" → pages 2–4 (portrait A4 PDF)
+- Step 2 nav-panel: "📄 EXPORT MAP" → page 5 + landscape terrain (A4 PDF)
+- Step 3 nav-panel: "📄 EXPORT STRATEGY" → pages 6–7 + landscape strategy (A4 PDF)
+- Step 4: "📄 EXPORT FULL REPORT" → all 8 pages portrait; "🗺️ EXPORT LANDSCAPE MAPS" → both landscape pages
+
+**Architecture:** All drawing done in canvas (1014×1434px portrait, 1434×1014px landscape), converted to JPEG, assembled into A4 PDF via jsPDF.
+
+**Key functions (all in PDF script block at end of `get-started.html`):**
+- `PD` — constants object (dimensions, colours)
+- `_drawMap(ctx, x, y, mapW, includeEq)` — async, draws terrain + optional equipment
+- `_circ(ctx, cx, cy, r, cardId)` — async, draws circular equipment card
+- `_page1()` – `_page8()` — async, build each portrait page canvas
+- `_landscape1()`, `_landscape2()` — async, build landscape canvases
+- `_makePDF(portraitBuilders, landscapeBuilders, filename)` — assembles and downloads PDF
+- `exportStep1PDF()`, `exportStep2PDF()`, `exportStep3PDF()`, `exportFullReportPDF()`, `exportLandscapeMapsPDF()` — public export functions called from button onclick
+
+**Page colours:**
+- Amber header: pages 2, 3, 4 (`#E4A625`)
+- Green header: page 5 (`#3D7340`)
+- Teal header: pages 6, 7 (`#2D7A8C`)
+- No header band: pages 1, 8 (title + closing)
+
+**Quick image export** (original PNG/text exports) kept as "Quick Image Export" panel in Step 4.
 
 ---
 
