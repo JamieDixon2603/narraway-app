@@ -4858,6 +4858,34 @@ Created with NarraWay`;
         WHITE: [255, 255, 255],
     };
 
+    // Font globals — SSP = Source Sans Pro (matches app body font), helvetica = fallback
+    let _pdfFont = 'helvetica';
+    let _sspCache = null;
+
+    async function _loadBodyFont(pdf) {
+        if (_sspCache) {
+            pdf.addFileToVFS('SSP-R.ttf', _sspCache.r);
+            pdf.addFont('SSP-R.ttf', 'SSP', 'normal');
+            pdf.addFileToVFS('SSP-SB.ttf', _sspCache.sb);
+            pdf.addFont('SSP-SB.ttf', 'SSP', 'bold');
+            _pdfFont = 'SSP'; return;
+        }
+        try {
+            const base = 'https://raw.githubusercontent.com/google/fonts/main/ofl/sourcesanspro/';
+            const [rBuf, sbBuf] = await Promise.all([
+                fetch(base + 'SourceSansPro-Regular.ttf').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }),
+                fetch(base + 'SourceSansPro-SemiBold.ttf').then(r => { if (!r.ok) throw 0; return r.arrayBuffer(); }),
+            ]);
+            const toB64 = buf => { let s = ''; new Uint8Array(buf).forEach(b => s += String.fromCharCode(b)); return btoa(s); };
+            _sspCache = { r: toB64(rBuf), sb: toB64(sbBuf) };
+            pdf.addFileToVFS('SSP-R.ttf', _sspCache.r);
+            pdf.addFont('SSP-R.ttf', 'SSP', 'normal');
+            pdf.addFileToVFS('SSP-SB.ttf', _sspCache.sb);
+            pdf.addFont('SSP-SB.ttf', 'SSP', 'bold');
+            _pdfFont = 'SSP';
+        } catch (e) { _pdfFont = 'helvetica'; }
+    }
+
     // Safe field getter
     const _fv = id => (document.getElementById(id) || {}).value || '';
 
@@ -4876,7 +4904,7 @@ Created with NarraWay`;
 
     async function _mapURL(wMM, includeEq) {
         const cols = state.mapCols, rows = state.mapRows;
-        const PPM = 12; // ~300 dpi print quality
+        const PPM = 8; // ~200 dpi — sharp on screen & print, safe for jsPDF
         const wPx = Math.round(wMM * PPM), ts = wPx / cols, hPx = Math.round(ts * rows);
         const cv = document.createElement('canvas');
         cv.width = wPx; cv.height = hPx;
@@ -4983,11 +5011,16 @@ Created with NarraWay`;
         pdf.roundedRect(x, y, w, h, 2.5, 2.5, 'FD');
     }
 
-    // Wrap text onto pdf, returns y after last line
-    function _wrap(pdf, text, x, y, maxW, lineH) {
+    // Wrap text onto pdf, returns y after last line.
+    // maxY (optional): stop drawing lines beyond this y — prevents page overflow.
+    function _wrap(pdf, text, x, y, maxW, lineH, maxY) {
         if (!text || !text.trim()) return y;
         const lines = pdf.splitTextToSize(text, maxW);
-        for (const line of lines) { pdf.text(line, x, y); y += lineH; }
+        for (const line of lines) {
+            if (maxY !== undefined && y > maxY) break;
+            pdf.text(line, x, y);
+            y += lineH;
+        }
         return y;
     }
 
@@ -5000,25 +5033,25 @@ Created with NarraWay`;
     // Render header band text to canvas using browser's Poppins font → data URL
     // This ensures the header matches the app's typeface exactly.
     function _headerTextURL(title) {
-        const PPM = 12;
+        const PPM = 8;
         const w = Math.round(_P.CW * PPM), h = Math.round(_P.HDR * PPM);
         const cv = document.createElement('canvas');
         cv.width = w; cv.height = h;
         const ctx = cv.getContext('2d');
         ctx.textBaseline = 'middle';
         const mid = h / 2;
-        // "NarraWay" brand text on the right
-        const sideFontPx = Math.round(h * 0.37);
+        // "NarraWay" brand text on the right — slightly smaller
+        const sideFontPx = Math.round(h * 0.30);
         ctx.font = `600 ${sideFontPx}px 'Poppins', sans-serif`;
         ctx.fillStyle = '#FFFFFF';
         ctx.textAlign = 'right';
         ctx.fillText('NarraWay', w - 2, mid);
-        const sideW = ctx.measureText('NarraWay').width + 10;
-        // Title on the left — auto-scale font to fit
-        let titlePx = Math.round(h * 0.50);
+        const sideW = ctx.measureText('NarraWay').width + 12;
+        // Title on the left — auto-scale to fit with comfortable gap
+        let titlePx = Math.round(h * 0.40);
         ctx.font = `bold ${titlePx}px 'Poppins', sans-serif`;
         ctx.textAlign = 'left';
-        const maxTitleW = w - sideW - 8;
+        const maxTitleW = w - sideW - 12;
         while (titlePx > 8 && ctx.measureText(title).width > maxTitleW) {
             titlePx--;
             ctx.font = `bold ${titlePx}px 'Poppins', sans-serif`;
@@ -5048,10 +5081,10 @@ Created with NarraWay`;
         const stackH = 9 + 4 + 6 + 3 + 5 + 5 + logoH;
         let y = lowerStart + Math.max(4, (lowerH - stackH) / 2);
 
-        _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(20);
+        _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(20);
         pdf.text(_jName(), _P.W / 2, y + 7, { align: 'center' }); y += 13;
 
-        _tc(pdf, _P.AMBER); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(12);
+        _tc(pdf, _P.AMBER); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(12);
         pdf.text('Strategic Plan for', _P.W / 2, y + 4.5, { align: 'center' }); y += 9;
 
         _tc(pdf, _P.TEXT); pdf.setFontSize(10);
@@ -5073,14 +5106,14 @@ Created with NarraWay`;
             { label: 'Patterns Spotted', value: _fv('patternsSpotted') },
         ];
         for (const sec of sections) {
-            _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11);
+            _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(11);
             pdf.text(sec.label, _P.MG, y + 4); y += 7;
             const body = sec.value || '(Not completed)';
-            pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
+            pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
             const boxH = Math.max(18, pad + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
             _parchBox(pdf, _P.MG, y, _P.CW, boxH);
             _tc(pdf, _P.TEXT);
-            _wrap(pdf, body, _P.MG + pad, y + pad + 3.5, textW, lineH);
+            _wrap(pdf, body, _P.MG + pad, y + pad + 3.5, textW, lineH, _P.H - 5);
             y += boxH + 5;
         }
     }
@@ -5093,13 +5126,13 @@ Created with NarraWay`;
         const cards = state.strengthCards.filter(sc => sc.cardId);
         const startY = _P.BAR + _P.HDR + 5;
         if (cards.length === 0) {
-            _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(11);
+            _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(11);
             pdf.text('No strength cards assigned yet.', _P.MG, startY + 6); return;
         }
 
         const numCols = 3, cellW = _P.CW / numCols;
         const imgD = 18, cellH = 52, gap = 3, pad = 3;
-        const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 12)));
+        const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 8)));
 
         for (let i = 0; i < cards.length; i++) {
             const sc = cards[i];
@@ -5108,11 +5141,11 @@ Created with NarraWay`;
             _parchBox(pdf, bx, by, cellW - 2, cellH);
             const cx = bx + (cellW - 2) / 2;
             if (urls[i]) pdf.addImage(urls[i], 'PNG', cx - imgD / 2, by + pad, imgD, imgD);
-            _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8.5);
+            _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(8.5);
             const titleLines = pdf.splitTextToSize(sc.title || sc.name || '', cellW - 6);
             pdf.text(titleLines.slice(0, 2), cx, by + pad + imgD + 5, { align: 'center' });
             if (sc.descriptor) {
-                _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7);
+                _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(7);
                 const dLines = pdf.splitTextToSize(sc.descriptor, cellW - 8);
                 pdf.text(dLines.slice(0, 3), bx + pad + 1, by + pad + imgD + 11);
             }
@@ -5127,20 +5160,20 @@ Created with NarraWay`;
         const pad = 5, lineH = 5.5, textW = _P.CW - pad * 2;
         const startY = _P.BAR + _P.HDR + 8;
         const body = _fv('strengthsSummary') || '(Not completed)';
-        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
+        pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
         const boxH = pad + 10 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad;
         _parchBox(pdf, _P.MG, startY, _P.CW, boxH);
-        _tc(pdf, _P.AMBER); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(12);
+        _tc(pdf, _P.AMBER); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(12);
         pdf.text('I am at my best when...', _P.MG + pad, startY + pad + 5);
-        _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
-        _wrap(pdf, body, _P.MG + pad, startY + pad + 13, textW, lineH);
+        _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
+        _wrap(pdf, body, _P.MG + pad, startY + pad + 13, textW, lineH, _P.H - 5);
 
         const cards = state.strengthCards.filter(sc => sc.cardId);
         if (cards.length > 0) {
             const imgD = 15, spacing = imgD + 3;
             const totalW = cards.length * spacing - 3;
             const rowX = _P.MG + (_P.CW - totalW) / 2, rowY = startY + boxH + 8;
-            const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 12)));
+            const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 8)));
             for (let i = 0; i < cards.length; i++) {
                 if (urls[i]) pdf.addImage(urls[i], 'PNG', rowX + i * spacing, rowY, imgD, imgD);
             }
@@ -5166,14 +5199,14 @@ Created with NarraWay`;
             { label: 'Where I want to go...', value: _fv('notes2Right') },
         ];
         for (const sec of sections) {
-            _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+            _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(10);
             pdf.text(sec.label, _P.MG, y + 3.5); y += 6;
             const body = sec.value || '(Not completed)';
-            pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+            pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(9);
             const boxH = Math.max(13, pad + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
             _parchBox(pdf, _P.MG, y, _P.CW, boxH);
             _tc(pdf, _P.TEXT);
-            _wrap(pdf, body, _P.MG + pad, y + pad + 3, textW, lineH);
+            _wrap(pdf, body, _P.MG + pad, y + pad + 3, textW, lineH, _P.H - 5);
             y += boxH + 3.5;
         }
     }
@@ -5192,13 +5225,13 @@ Created with NarraWay`;
         let y = mapTopY + map.hMM + 6;
         const pad = 5, lineH = 5.5, textW = _P.CW - pad * 2;
         const body = _fv('notes3') || '(Not completed)';
-        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
+        pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
         const boxH = Math.max(22, pad + 11 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
         _parchBox(pdf, _P.MG, y, _P.CW, boxH);
-        _tc(pdf, _P.TEAL); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(12);
+        _tc(pdf, _P.TEAL); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(12);
         pdf.text('My strengths will help me...', _P.MG + pad, y + pad + 5);
-        _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
-        _wrap(pdf, body, _P.MG + pad, y + pad + 14, textW, lineH);
+        _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
+        _wrap(pdf, body, _P.MG + pad, y + pad + 14, textW, lineH, _P.H - 5);
     }
 
     // Page 7: My Three Moves
@@ -5221,26 +5254,27 @@ Created with NarraWay`;
 
         function _mh(m) {
             let h = pad + 9 + 3;
-            pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8.5);
-            for (const k of fieldKeys) { h += 5 + _nlines(pdf, m[k] || '—', textW) * lineH + 3; }
+            pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(8.5);
+            for (const k of fieldKeys) { h += 5 + 3 + _nlines(pdf, m[k] || '—', textW) * lineH + 3; }
             return h + pad;
         }
-        const cardH = Math.max(80, ...moves.map(m => _mh(m)));
+        const maxCardH = _P.H - cardStartY - 8;
+        const cardH = Math.max(80, Math.min(maxCardH, ...moves.map(m => _mh(m))));
 
         for (let i = 0; i < 3; i++) {
             const m = moves[i], cx = cardXs[i];
             _parchBox(pdf, cx, cardStartY, cardW, cardH);
             let cy = cardStartY + pad;
-            _tc(pdf, _P.TEAL); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11);
+            _tc(pdf, _P.TEAL); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(11);
             pdf.text(`Move ${i + 1}`, cx + pad, cy + 5); cy += 9;
             _dc(pdf, _P.GREY); pdf.setLineWidth(0.3);
             pdf.line(cx + pad, cy, cx + cardW - pad, cy); cy += 3;
             for (let fi = 0; fi < fieldKeys.length; fi++) {
                 const val = m[fieldKeys[fi]] || '—';
-                _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(7.5);
+                _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(7.5);
                 pdf.text(fieldLabels[fi], cx + pad, cy + 3.5); cy += 5;
-                _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8.5);
-                cy = _wrap(pdf, val, cx + pad, cy + 3, textW, lineH); cy += 3;
+                _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(8.5);
+                cy = _wrap(pdf, val, cx + pad, cy + 3, textW, lineH, cardStartY + cardH - pad); cy += 3;
             }
         }
 
@@ -5249,10 +5283,10 @@ Created with NarraWay`;
             const imgD = 14, spacing = imgD + 3;
             const totalW = allCards.length * spacing - 3;
             const rowX = _P.MG + (_P.CW - totalW) / 2, rowY = cardStartY + cardH + 6;
-            const urls = await Promise.all(allCards.map(sc => _circURL(sc.cardId, imgD * 12)));
+            const urls = await Promise.all(allCards.map(sc => _circURL(sc.cardId, imgD * 8)));
             for (let i = 0; i < allCards.length; i++) {
                 if (urls[i]) pdf.addImage(urls[i], 'PNG', rowX + i * spacing, rowY, imgD, imgD);
-                _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(6.5);
+                _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(6.5);
                 const label = pdf.splitTextToSize(allCards[i].title || allCards[i].name || '', imgD + 2);
                 pdf.text(label.slice(0, 2), rowX + i * spacing + imgD / 2, rowY + imgD + 3.5, { align: 'center' });
             }
@@ -5286,13 +5320,13 @@ Created with NarraWay`;
 
         if (logo) { pdf.addImage(logo.url, 'PNG', (_P.W - logoW) / 2, y, logoW, logoH); y += logoH + 6; }
 
-        _tc(pdf, _P.TEAL); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(11);
+        _tc(pdf, _P.TEAL); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(11);
         pdf.text('Discover Your Strengths. Navigate Your Journey.', _P.W / 2, y + 5, { align: 'center' }); y += 11;
 
         _fc(pdf, _P.AMBER); pdf.rect(_P.MG, y, _P.CW, 0.5, 'F'); y += 5;
 
         const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        _tc(pdf, _P.TEXT); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9);
+        _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(9);
         pdf.text(dateStr, _P.W / 2, y + 3.5, { align: 'center' }); y += 8;
         _tc(pdf, _P.BROWN);
         pdf.text('narraway.co.uk', _P.W / 2, y + 3.5, { align: 'center' });
@@ -5322,18 +5356,20 @@ Created with NarraWay`;
     // ---- PDF ASSEMBLER ----
     async function _makePDF(portraitFns, landscapeFns, filename) {
         const { jsPDF } = window.jspdf;
-        let pdf = null, first = true;
-        for (const fn of portraitFns) {
-            if (first) { pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' }); first = false; }
-            else pdf.addPage('a4', 'portrait');
-            await fn(pdf);
+        _pdfFont = 'helvetica'; // reset before each export
+        const allTasks = [
+            ...portraitFns.map(fn => ({ fn, orient: 'portrait' })),
+            ...(landscapeFns || []).map(fn => ({ fn, orient: 'landscape' })),
+        ];
+        if (!allTasks.length) return;
+        const pdf = new jsPDF({ orientation: allTasks[0].orient, unit: 'mm', format: 'a4' });
+        await _loadBodyFont(pdf);
+        await allTasks[0].fn(pdf);
+        for (let i = 1; i < allTasks.length; i++) {
+            pdf.addPage('a4', allTasks[i].orient);
+            await allTasks[i].fn(pdf);
         }
-        for (const fn of (landscapeFns || [])) {
-            if (first) { pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }); first = false; }
-            else pdf.addPage('a4', 'landscape');
-            await fn(pdf);
-        }
-        if (pdf) pdf.save(filename);
+        pdf.save(filename);
     }
 
     // ---- PUBLIC EXPORT FUNCTIONS ----
