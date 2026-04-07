@@ -1856,25 +1856,25 @@
         /* Strength Slots */
         .strength-slots-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 8px;
             margin-bottom: 24px;
         }
 
         .strength-slot {
             background: var(--color-background);
             border: 2px solid var(--color-wood-light);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 10px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 7px;
         }
 
         .strength-drop-zone {
-            width: 90px;
-            height: 90px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             border: 3px dashed var(--color-wood-light);
             background: rgba(255,255,255,0.6);
@@ -1901,8 +1901,8 @@
         }
 
         .strength-drop-zone img.assigned-card {
-            width: 80px;
-            height: 80px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -4011,22 +4011,7 @@ Created with NarraWay`;
                 if (nameInput) nameInput.value = getDefaultJourneyName();
 
                 // Populate saved journeys list if any exist
-                const loadSection = document.getElementById('loadSavedSection');
-                const savedList = document.getElementById('savedJourneysList');
-                if (savedJourneys.length > 0) {
-                    loadSection.style.display = 'block';
-                    savedList.innerHTML = savedJourneys.map(j => `
-                        <div onclick="loadJourneyFromModal('${j.id}')" style="padding: 12px 16px; border: 2px solid var(--color-wood-light); border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; background: white;" onmouseover="this.style.background='#f5f0e8'; this.style.borderColor='var(--color-primary)'" onmouseout="this.style.background='white'; this.style.borderColor='var(--color-wood-light)'">
-                            <div>
-                                <div style="font-weight: 700; font-size: 1rem; color: var(--color-text);">${escapeHtml(j.name)}</div>
-                                <div style="font-size: 0.8rem; color: #888; margin-top: 2px;">Last saved: ${new Date(j.lastModified).toLocaleDateString()}</div>
-                            </div>
-                            <span style="background: var(--color-primary); color: var(--color-text); padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; font-family: var(--font-heading);">LOAD</span>
-                        </div>
-                    `).join('');
-                } else {
-                    loadSection.style.display = 'none';
-                }
+                renderWelcomeJourneysList();
 
                 $('journeyNameModal').classList.remove('hidden');
                 nameInput.focus();
@@ -4281,6 +4266,30 @@ Created with NarraWay`;
             }
         }
 
+        // Render journeys list in the welcome/startup modal
+        function renderWelcomeJourneysList() {
+            const loadSection = document.getElementById('loadSavedSection');
+            const savedList = document.getElementById('savedJourneysList');
+            if (!savedList) return;
+            if (savedJourneys.length > 0) {
+                if (loadSection) loadSection.style.display = 'block';
+                savedList.innerHTML = savedJourneys.map(j => `
+                    <div style="display:flex; align-items:stretch; border:2px solid var(--color-wood-light); border-radius:8px; margin-bottom:8px; background:white; overflow:hidden;">
+                        <div onclick="loadJourneyFromModal('${j.id}')" style="flex:1; padding:12px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.15s;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background='transparent'">
+                            <div>
+                                <div style="font-weight:700; font-size:1rem; color:var(--color-text);">${escapeHtml(j.name)}</div>
+                                <div style="font-size:0.8rem; color:#888; margin-top:2px;">Last saved: ${new Date(j.lastModified).toLocaleDateString()}</div>
+                            </div>
+                            <span style="background:var(--color-primary); color:var(--color-text); padding:6px 14px; border-radius:6px; font-size:0.85rem; font-weight:600; font-family:var(--font-heading); flex-shrink:0; margin-left:12px;">LOAD</span>
+                        </div>
+                        <button onclick="deleteJourney('${j.id}')" style="flex-shrink:0; border:none; background:none; color:#bbb; font-size:1.5rem; line-height:1; padding:0 14px; cursor:pointer; border-left:1px solid var(--color-wood-light);" onmouseover="this.style.color='#cc3333'; this.style.background='#fff5f5'" onmouseout="this.style.color='#bbb'; this.style.background='none'" title="Delete journey">×</button>
+                    </div>
+                `).join('');
+            } else {
+                if (loadSection) loadSection.style.display = 'none';
+            }
+        }
+
         // Save journeys to Supabase (called after individual journey changes)
         async function saveJourneysToCloud() {
             // Individual journey saves are handled in saveJourney function
@@ -4410,6 +4419,7 @@ Created with NarraWay`;
                     currentJourneyId = null;
                 }
                 await loadJourneysFromCloud();
+                renderWelcomeJourneysList();
             } catch (error) {
                 console.error('Error deleting journey:', error);
                 alert('Failed to delete journey. Please try again.');
@@ -4866,7 +4876,7 @@ Created with NarraWay`;
 
     async function _mapURL(wMM, includeEq) {
         const cols = state.mapCols, rows = state.mapRows;
-        const PPM = 4; // ~381 dpi
+        const PPM = 12; // ~300 dpi print quality
         const wPx = Math.round(wMM * PPM), ts = wPx / cols, hPx = Math.round(ts * rows);
         const cv = document.createElement('canvas');
         cv.width = wPx; cv.height = hPx;
@@ -4963,11 +4973,8 @@ Created with NarraWay`;
 
     function _header(pdf, color, title) {
         _fc(pdf, color); pdf.rect(0, _P.BAR, _P.W, _P.HDR, 'F');
-        _tc(pdf, _P.WHITE);
-        pdf.setFont('helvetica', 'bold'); pdf.setFontSize(15);
-        pdf.text(title, _P.MG, _P.BAR + _P.HDR/2 + 3);
-        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(10);
-        pdf.text('NarraWay', _P.W - _P.MG, _P.BAR + _P.HDR/2 + 2, { align: 'right' });
+        // Overlay canvas-rendered text so header uses the app's Poppins font
+        pdf.addImage(_headerTextURL(title), 'PNG', _P.MG, _P.BAR, _P.CW, _P.HDR);
     }
 
     function _parchBox(pdf, x, y, w, h) {
@@ -4988,6 +4995,36 @@ Created with NarraWay`;
     function _nlines(pdf, text, maxW) {
         if (!text || !text.trim()) return 0;
         return pdf.splitTextToSize(text, maxW).length;
+    }
+
+    // Render header band text to canvas using browser's Poppins font → data URL
+    // This ensures the header matches the app's typeface exactly.
+    function _headerTextURL(title) {
+        const PPM = 12;
+        const w = Math.round(_P.CW * PPM), h = Math.round(_P.HDR * PPM);
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d');
+        ctx.textBaseline = 'middle';
+        const mid = h / 2;
+        // "NarraWay" brand text on the right
+        const sideFontPx = Math.round(h * 0.37);
+        ctx.font = `600 ${sideFontPx}px 'Poppins', sans-serif`;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'right';
+        ctx.fillText('NarraWay', w - 2, mid);
+        const sideW = ctx.measureText('NarraWay').width + 10;
+        // Title on the left — auto-scale font to fit
+        let titlePx = Math.round(h * 0.50);
+        ctx.font = `bold ${titlePx}px 'Poppins', sans-serif`;
+        ctx.textAlign = 'left';
+        const maxTitleW = w - sideW - 8;
+        while (titlePx > 8 && ctx.measureText(title).width > maxTitleW) {
+            titlePx--;
+            ctx.font = `bold ${titlePx}px 'Poppins', sans-serif`;
+        }
+        ctx.fillText(title, 2, mid);
+        return cv.toDataURL('image/png');
     }
 
     // ---- PAGE BUILDERS (each receives the jsPDF instance) ----
@@ -5062,7 +5099,7 @@ Created with NarraWay`;
 
         const numCols = 3, cellW = _P.CW / numCols;
         const imgD = 18, cellH = 52, gap = 3, pad = 3;
-        const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, 140)));
+        const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 12)));
 
         for (let i = 0; i < cards.length; i++) {
             const sc = cards[i];
@@ -5103,7 +5140,7 @@ Created with NarraWay`;
             const imgD = 15, spacing = imgD + 3;
             const totalW = cards.length * spacing - 3;
             const rowX = _P.MG + (_P.CW - totalW) / 2, rowY = startY + boxH + 8;
-            const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, 110)));
+            const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 12)));
             for (let i = 0; i < cards.length; i++) {
                 if (urls[i]) pdf.addImage(urls[i], 'PNG', rowX + i * spacing, rowY, imgD, imgD);
             }
@@ -5212,7 +5249,7 @@ Created with NarraWay`;
             const imgD = 14, spacing = imgD + 3;
             const totalW = allCards.length * spacing - 3;
             const rowX = _P.MG + (_P.CW - totalW) / 2, rowY = cardStartY + cardH + 6;
-            const urls = await Promise.all(allCards.map(sc => _circURL(sc.cardId, 100)));
+            const urls = await Promise.all(allCards.map(sc => _circURL(sc.cardId, imgD * 12)));
             for (let i = 0; i < allCards.length; i++) {
                 if (urls[i]) pdf.addImage(urls[i], 'PNG', rowX + i * spacing, rowY, imgD, imgD);
                 _tc(pdf, _P.BROWN); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(6.5);
