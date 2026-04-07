@@ -2718,7 +2718,9 @@
             <!-- New Journey Section -->
             <h2 style="margin-bottom: 8px;">Start New Journey</h2>
             <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">Give your journey a name. Your progress will be saved automatically.</p>
-            <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 12px;">
+            <input type="text" id="welcomeJourneyName" maxlength="50" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 8px;">
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 4px; text-align: left;">Your full name (shown on PDF reports)</p>
+            <input type="text" id="coacheeNameInput" placeholder="e.g. Jane Smith" maxlength="80" style="width: 100%; padding: 12px; border: 2px solid var(--color-wood-light); border-radius: 8px; font-size: 1rem; font-family: var(--font-body); box-sizing: border-box; margin-bottom: 12px;">
             <label style="display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: #555; margin-bottom: 16px; cursor: pointer; user-select: none;">
                 <input type="checkbox" id="teamModeToggle" style="width: 18px; height: 18px; cursor: pointer; flex-shrink: 0;">
                 <span>This is for a team <span style="color: #999; font-size: 0.8rem;">(switches I/My to We/Our throughout)</span></span>
@@ -2851,6 +2853,7 @@
             strengthCards: [], // array of {name, cardId, title, descriptor}
             showGridCoords: false,
             teamMode: false,
+            coacheeName: '', // user's full name, shown on PDF title page
         };
 
         // Initialize terrain usage
@@ -3878,6 +3881,7 @@ Created with NarraWay`;
             state.selectedEquipment.clear();
             state.strengthsList = [];
             state.strengthCards = [];
+            state.coacheeName = '';
             state.showGridCoords = false;
             ['gridCoordsToggle2', 'gridCoordsToggle3'].forEach(id => {
                 const el = $(id);
@@ -4023,6 +4027,8 @@ Created with NarraWay`;
                 const name = (nameInput && nameInput.value.trim()) || getDefaultJourneyName();
                 const teamToggle = $('teamModeToggle');
                 applyTeamMode(teamToggle ? teamToggle.checked : false);
+                const coacheeInput = document.getElementById('coacheeNameInput');
+                state.coacheeName = (coacheeInput && coacheeInput.value.trim()) || '';
                 autosaveJourneyName = name;
                 $('journeyNameModal').classList.add('hidden');
                 // Trigger first autosave to create the journey in the database
@@ -4133,6 +4139,7 @@ Created with NarraWay`;
                 placedEquipment: { ...state.placedEquipment },
                 showGridCoords: state.showGridCoords,
                 teamMode: state.teamMode,
+                coacheeName: state.coacheeName || '',
                 // Step 1 — new fields
                 surveyResponses: document.getElementById('surveyResponses').value,
                 selfReflection: document.getElementById('selfReflection').value,
@@ -4168,6 +4175,7 @@ Created with NarraWay`;
                 const el = document.getElementById(id);
                 if (el) el.checked = state.showGridCoords;
             });
+            state.coacheeName = data.coacheeName || '';
             applyTeamMode(data.teamMode || false);
             const teamToggle = document.getElementById('teamModeToggle');
             if (teamToggle) teamToggle.checked = state.teamMode;
@@ -5000,7 +5008,10 @@ Created with NarraWay`;
     }
 
     function _header(pdf, color, title) {
-        _fc(pdf, color); pdf.rect(0, _P.BAR, _P.W, _P.HDR, 'F');
+        // Draw header from y=0 so there's no sub-pixel gap between the amber top strip and the header band
+        _fc(pdf, color); pdf.rect(0, 0, _P.W, _P.BAR + _P.HDR, 'F');
+        // Re-paint the amber top strip over the header so it stays visible on non-amber pages
+        _fc(pdf, _P.AMBER); pdf.rect(0, 0, _P.W, _P.BAR, 'F');
         // Overlay canvas-rendered text so header uses the app's Poppins font
         pdf.addImage(_headerTextURL(title), 'PNG', _P.MG, _P.BAR, _P.CW, _P.HDR);
     }
@@ -5078,6 +5089,7 @@ Created with NarraWay`;
         const lowerStart = mapTopY + map.hMM + 5;
         const lowerH = _P.H - _P.BAR - lowerStart;
         const email = (typeof currentUser !== 'undefined' && currentUser) ? (currentUser.email || '') : '';
+        const displayName = (state.coacheeName && state.coacheeName.trim()) ? state.coacheeName.trim() : email;
         const stackH = 9 + 4 + 6 + 3 + 5 + 5 + logoH;
         let y = lowerStart + Math.max(4, (lowerH - stackH) / 2);
 
@@ -5087,8 +5099,8 @@ Created with NarraWay`;
         _tc(pdf, _P.AMBER); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(12);
         pdf.text('Strategic Plan for', _P.W / 2, y + 4.5, { align: 'center' }); y += 9;
 
-        _tc(pdf, _P.TEXT); pdf.setFontSize(10);
-        pdf.text(email, _P.W / 2, y + 3.5, { align: 'center' }); y += 10;
+        _tc(pdf, _P.TEXT); pdf.setFontSize(11);
+        pdf.text(displayName, _P.W / 2, y + 3.5, { align: 'center' }); y += 10;
 
         if (logo) pdf.addImage(logo.url, 'PNG', (_P.W - logoW) / 2, y, logoW, logoH);
     }
@@ -5106,14 +5118,14 @@ Created with NarraWay`;
             { label: 'Patterns Spotted', value: _fv('patternsSpotted') },
         ];
         for (const sec of sections) {
-            _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(11);
-            pdf.text(sec.label, _P.MG, y + 4); y += 7;
             const body = sec.value || '(Not completed)';
             pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
-            const boxH = Math.max(18, pad + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
+            const boxH = Math.max(26, pad + 9 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
             _parchBox(pdf, _P.MG, y, _P.CW, boxH);
-            _tc(pdf, _P.TEXT);
-            _wrap(pdf, body, _P.MG + pad, y + pad + 3.5, textW, lineH, _P.H - 5);
+            _tc(pdf, _P.AMBER); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(11);
+            pdf.text(sec.label, _P.MG + pad, y + pad + 5);
+            _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
+            _wrap(pdf, body, _P.MG + pad, y + pad + 12, textW, lineH, _P.H - 5);
             y += boxH + 5;
         }
     }
@@ -5199,14 +5211,14 @@ Created with NarraWay`;
             { label: 'Where I want to go...', value: _fv('notes2Right') },
         ];
         for (const sec of sections) {
-            _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(10);
-            pdf.text(sec.label, _P.MG, y + 3.5); y += 6;
             const body = sec.value || '(Not completed)';
             pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(9);
-            const boxH = Math.max(13, pad + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
+            const boxH = Math.max(20, pad + 8 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
             _parchBox(pdf, _P.MG, y, _P.CW, boxH);
-            _tc(pdf, _P.TEXT);
-            _wrap(pdf, body, _P.MG + pad, y + pad + 3, textW, lineH, _P.H - 5);
+            _tc(pdf, _P.GREEN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(10);
+            pdf.text(sec.label, _P.MG + pad, y + pad + 4.5);
+            _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(9);
+            _wrap(pdf, body, _P.MG + pad, y + pad + 11, textW, lineH, _P.H - 5);
             y += boxH + 3.5;
         }
     }
@@ -5271,7 +5283,7 @@ Created with NarraWay`;
             pdf.line(cx + pad, cy, cx + cardW - pad, cy); cy += 3;
             for (let fi = 0; fi < fieldKeys.length; fi++) {
                 const val = m[fieldKeys[fi]] || '—';
-                _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(7.5);
+                _tc(pdf, _P.TEAL); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(7.5);
                 pdf.text(fieldLabels[fi], cx + pad, cy + 3.5); cy += 5;
                 _tc(pdf, _P.TEXT); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(8.5);
                 cy = _wrap(pdf, val, cx + pad, cy + 3, textW, lineH, cardStartY + cardH - pad); cy += 3;
