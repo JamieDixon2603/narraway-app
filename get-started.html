@@ -5188,6 +5188,9 @@ Created with NarraWay`;
             const urls = await Promise.all(cards.map(sc => _circURL(sc.cardId, imgD * 8)));
             for (let i = 0; i < cards.length; i++) {
                 if (urls[i]) pdf.addImage(urls[i], 'PNG', rowX + i * spacing, rowY, imgD, imgD);
+                _tc(pdf, _P.BROWN); pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(6.5);
+                const label = pdf.splitTextToSize(cards[i].title || cards[i].name || '', imgD + 2);
+                pdf.text(label.slice(0, 2), rowX + i * spacing + imgD / 2, rowY + imgD + 3.5, { align: 'center' });
             }
         }
     }
