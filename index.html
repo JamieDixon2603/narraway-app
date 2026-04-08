@@ -456,7 +456,7 @@
             gap: 28px;
             max-width: 1200px;
             margin: 0 auto;
-            align-items: start;
+            align-items: stretch;
         }
 
         .programme-card {
@@ -499,7 +499,14 @@
             font-size: 0.92rem;
             line-height: 1.75;
             color: var(--color-wood);
-            margin-bottom: 28px;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .programme-body .btn {
+            margin-top: auto;
+            align-self: flex-start;
         }
 
         .programme-body strong {
@@ -1194,12 +1201,13 @@
                 <div class="programme-card fade-in">
                     <div class="programme-tier">Team Coaching</div>
                     <div class="programme-price">£6,000</div>
-                    <p class="programme-tagline">A structured programme for teams navigating change, challenge, or transition together.</p>
+                    <p class="programme-tagline">Three half-day workshops for teams navigating change, challenge, or transition together.</p>
                     <div class="programme-body">
                         <ul>
-                            <li>Everything in One-to-One Coaching</li>
-                            <li>Half-day workshop: peer surveys, individual mapping, group debrief, and shared action planning</li>
-                            <li>Individual coaching sessions for each team member</li>
+                            <li>Everything in Self-Paced</li>
+                            <li>Session 1: Individual strength identification and team strengths identification</li>
+                            <li>Session 2: Individual journey mapping and team journey mapping</li>
+                            <li>Session 3: Team strengths strategy planning</li>
                             <li>Leadership debrief and recommendations</li>
                         </ul>
                         <p class="programme-note">By bank transfer.</p>
