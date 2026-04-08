@@ -531,6 +531,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 20px;
+            position: relative;
         }
 
         /* Counter Badge */
@@ -1844,19 +1845,19 @@
         .pw-add-template-btn {
             margin-top: 4px;
             padding: 8px 18px;
-            background: transparent;
-            color: var(--color-primary);
-            border: 2px dashed var(--color-primary);
+            background: var(--color-primary);
+            color: var(--color-text);
+            border: none;
             border-radius: 8px;
             font-family: var(--font-heading);
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: opacity 0.2s;
         }
 
         .pw-add-template-btn:hover {
-            background: rgba(228, 166, 37, 0.1);
+            opacity: 0.85;
         }
 
         .pw-survey-section {
@@ -2249,7 +2250,7 @@
                     <p>Reach out to 8–12 people from different areas of your life. Don't limit this to current colleagues. Think broadly. Former bosses, old friends, people who knew you in a different context entirely. The diversity of perspective is what makes this valuable.</p>
                     <p>Ask each of them this one question: <strong>When have you seen me at my best?</strong></p>
                     <p>A template email is below. Choose whichever version feels most natural, copy it, personalise the opening line, and send it.</p>
-                    <p>Allow up to one week for responses to come in before your session.</p>
+                    <p>When you receive responses, copy and paste them into the Survey Responses box below, these will be saved and appear in the next step of the process for your reference.</p>
                 </div>
 
                 <div id="pwTemplatesList">
@@ -2525,8 +2526,8 @@ A few sentences is plenty. Just reply when you get a chance. Thank you.
             </div>
 
             <div class="panel nav-panel">
-                <button class="btn btn-secondary" id="exportStep1Btn" onclick="exportStep1PDF()" style="font-size:0.85rem;">📄 EXPORT PROFILE</button>
                 <button class="btn btn-primary" id="continueToStep2" disabled>CONTINUE TO MAPPING →</button>
+                <button class="btn btn-secondary" id="exportStep1Btn" onclick="exportStep1PDF()" style="font-size:0.85rem; position:absolute; left:50%; transform:translateX(-50%);">📄 EXPORT PROFILE</button>
             </div>
         </div>
 
