@@ -106,6 +106,39 @@ Three-tier pricing to support individual, coached, and team use cases.
 ## Session Log
 _Ask Claude to update this section at regular intervals during chats._
 
+### Session — 8 April 2026
+
+**Pre-work page (Step 0) — built and shipped:**
+- New panel shown before Step 1 on every new journey (`id="preworkPanel"`)
+- Intro copy, peer survey instructions, two editable email templates (Formal + Casual) with Copy buttons, "+ Add another template" button (solid amber), Survey Responses textarea, Self-Reflection textarea (3 prompts listed, single textarea — consistent with Step 1)
+- Pre-work fields sync live to Step 1 `surveyResponses` and `selfReflection` fields
+- "Continue to Step 1 →" button sets `preworkComplete = true` and navigates to Step 1
+- State fields added: `preworkComplete` (bool), `customTemplates` (string[])
+- Full save/load/reset support
+
+**Header & navigation updates:**
+- "0" step dot added before dots 1–4; active during pre-work, ticks to ✓ on completion
+- "New Journey" button added directly in the header bar (was previously hidden in Load dropdown)
+- Welcome modal background now shows pre-work panel content instead of Step 1
+
+**Bug fixes:**
+- Added global `.hidden { display: none !important; }` CSS rule — was missing, causing preworkPanel to never hide correctly
+- PDF page 6: parchment box height now clamped to available space above footer bar (was overflowing with long text)
+- Strength slot title font size reduced 0.9rem → 0.75rem (long names were truncating in narrow cards)
+- "Continue to Mapping" button restored to right side of Step 1 nav bar; Export Profile centred via absolute positioning
+
+**Business/pricing decisions confirmed:**
+- Individual £150 — Stripe checkout (automated)
+- One-to-one coaching £750 — bank transfer + manual Supabase invite
+- Team coaching £6,000 — bank transfer + manual Supabase invite
+- Manual Supabase setup: invite user → immediately set `subscription_status = "active"` (no need to wait for password)
+
+**Remaining work agreed:**
+- Switch Stripe test → live (new price object + update price ID in `create-checkout` edge function)
+- Website: testimonial, pricing tiers, process structure, HubSpot report download, contact/book a call
+- HubSpot mailing list: add opt-in checkbox to signup; automate via webhook later
+- Record new videos
+
 ### Session — 13 Feb 2025
 **Save system — bug fixes & improvements:**
 - Fixed critical save bug: journey CRUD functions used wrong Supabase variable (`supabase` vs `supabaseClient`)
