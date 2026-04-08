@@ -556,6 +556,13 @@
             color: var(--color-text);
         }
 
+        .programmes-contact h3 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 16px;
+        }
+
         .programmes-contact a {
             color: var(--color-accent);
             font-weight: 600;
@@ -581,6 +588,50 @@
             line-height: 1.8;
             color: var(--color-wood);
             margin-bottom: 16px;
+        }
+
+        .logbook-samples {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 960px;
+            margin: 48px auto 0;
+        }
+
+        .logbook-sample {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .logbook-sample:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        }
+
+        .logbook-sample img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .logbook-sample-label {
+            background: #fff;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-wood);
+            text-align: center;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 700px) {
+            .logbook-samples {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
         }
 
         @media (max-width: 1000px) {
@@ -1135,6 +1186,7 @@
                             <li>Personalised summary and recommendations</li>
                         </ul>
                         <p class="programme-note">By bank transfer.</p>
+                        <a href="#contact-coaching" class="btn btn-primary">Get in Touch</a>
                     </div>
                 </div>
 
@@ -1151,12 +1203,16 @@
                             <li>Leadership debrief and recommendations</li>
                         </ul>
                         <p class="programme-note">By bank transfer.</p>
+                        <a href="#contact-coaching" class="btn btn-primary">Get in Touch</a>
                     </div>
                 </div>
 
             </div>
 
-            <p class="programmes-contact fade-in">For more information, or to book a 30-minute introductory call with Jamie Dixon, email <a href="mailto:info@thestoryhabit.com">info@thestoryhabit.com</a></p>
+            <div class="programmes-contact fade-in" id="contact-coaching">
+                <h3>Get in Touch</h3>
+                <p>For more information, or to book a 30-minute introductory call with Jamie Dixon, email <a href="mailto:info@thestoryhabit.com">info@thestoryhabit.com</a></p>
+            </div>
 
         </div>
     </section>
@@ -1170,6 +1226,20 @@
                 </div>
                 <p>Your Logbook is the main output of the NarraWay experience. It captures everything you've discovered: your strengths, your map, your reflections, and your plan for the journey ahead.</p>
                 <p>At the end of each session, you can export your Logbook as a PDF. It's designed to be printed, kept, and returned to. A tangible record of your thinking at this moment in time, and a reference point as you move forward.</p>
+            </div>
+            <div class="logbook-samples">
+                <div class="logbook-sample fade-in">
+                    <img src="Assets/Logbook/sample-cover.png" alt="Logbook cover page">
+                    <div class="logbook-sample-label">Cover</div>
+                </div>
+                <div class="logbook-sample fade-in">
+                    <img src="Assets/Logbook/sample-strengths.png" alt="Key Strengths page">
+                    <div class="logbook-sample-label">Key Strengths</div>
+                </div>
+                <div class="logbook-sample fade-in">
+                    <img src="Assets/Logbook/sample-map.png" alt="Map of the Journey Ahead">
+                    <div class="logbook-sample-label">Journey Map</div>
+                </div>
             </div>
         </div>
     </section>
