@@ -441,43 +441,137 @@
         }
 
         /* ========== PRICING SECTION ========== */
-        .pricing {
+        .programmes {
             padding: 100px 24px;
-            background: var(--color-header);
-            text-align: center;
+            background: #f5f0e5;
         }
 
-        .pricing h2 {
-            color: white;
-            font-size: 2.25rem;
+        .programmes .section-header {
+            margin-bottom: 56px;
+        }
+
+        .programmes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .programme-card {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 28px;
+            border: 3px solid var(--color-wood);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .programme-tier {
+            font-family: var(--font-heading);
             font-weight: 700;
-            margin-bottom: 40px;
+            font-size: 1.2rem;
+            color: var(--color-text);
+            margin-bottom: 8px;
         }
 
-        .price-display {
+        .programme-price {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 12px;
+        }
+
+        .programme-tagline {
+            font-size: 0.95rem;
+            color: var(--color-wood);
+            line-height: 1.65;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e8dcc8;
+        }
+
+        .programme-body {
+            flex: 1;
+            font-size: 0.92rem;
+            line-height: 1.75;
+            color: var(--color-wood);
+            margin-bottom: 28px;
+        }
+
+        .programme-body strong {
+            display: block;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            color: var(--color-text);
+            margin-top: 14px;
+            margin-bottom: 2px;
+        }
+
+        .programme-sub {
+            background: #faf6ed;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            border: 2px solid #e8dcc8;
+        }
+
+        .programme-sub-name {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-text);
+        }
+
+        .programme-sub-price {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 1.05rem;
+            margin-top: 2px;
+        }
+
+        .programme-sub-desc {
+            font-size: 0.85rem;
+            color: var(--color-wood);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .programme-note {
+            font-size: 0.85rem;
+            color: var(--color-wood-light);
+            font-style: italic;
+            margin-top: 16px;
+            line-height: 1.55;
+        }
+
+        .logbook-section {
+            padding: 80px 24px;
+            background: var(--color-background);
+        }
+
+        .logbook-inner {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .logbook-inner p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--color-wood);
             margin-bottom: 16px;
         }
 
-        .price-amount {
-            font-family: var(--font-heading);
-            font-size: 4rem;
-            font-weight: 700;
-            color: var(--color-primary);
-        }
-
-        .price-subtext {
-            font-size: 1.1rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 40px;
-        }
-
-        .pricing .btn {
-            margin-bottom: 24px;
-        }
-
-        .trust-text {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.6);
+        @media (max-width: 1000px) {
+            .programmes-grid {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+                margin: 0 auto;
+            }
         }
 
         /* ========== ABOUT SECTION ========== */
@@ -569,6 +663,70 @@
             gap: 32px;
             max-width: 1000px;
             margin: 0 auto;
+        }
+
+        .testimonial-card:last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .video-testimonial {
+            max-width: 1000px;
+            margin: 0 auto 48px;
+            background: white;
+            border-radius: 16px;
+            border: 3px solid var(--color-wood);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+
+        .video-testimonial-player {
+            aspect-ratio: 16/9;
+            width: 100%;
+        }
+
+        .video-testimonial-player iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+        }
+
+        .video-testimonial-content {
+            padding: 40px;
+            position: relative;
+        }
+
+        .video-testimonial-content::before {
+            content: "\201C";
+            font-family: var(--font-heading);
+            font-size: 5rem;
+            color: var(--color-primary);
+            opacity: 0.15;
+            position: absolute;
+            top: 8px;
+            left: 20px;
+            line-height: 1;
+        }
+
+        .video-testimonial-content blockquote {
+            font-size: 1rem;
+            color: var(--color-wood);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 900px) {
+            .video-testimonial {
+                grid-template-columns: 1fr;
+            }
         }
 
         .testimonial-card {
@@ -717,7 +875,7 @@
                     <li><a href="#how-it-works">How It Works</a></li>
                     <li><a href="#videos">Learn More</a></li>
                     <li><a href="#included">What's Included</a></li>
-                    <li><a href="#pricing">Get Started</a></li>
+                    <li><a href="#programmes">Get Started</a></li>
                 </ul>
             </nav>
         </div>
@@ -731,7 +889,7 @@
                 A visual coaching tool that helps you identify your strengths and apply them strategically to whatever challenge lies ahead.
             </p>
             <div class="hero-cta">
-                <a href="#pricing" class="btn btn-primary btn-large">Get Lifetime Access - £100</a>
+                <a href="#programmes" class="btn btn-primary btn-large">See Programmes</a>
             </div>
             <a href="#videos" class="hero-link">Watch how it works ↓</a>
         </div>
@@ -760,7 +918,7 @@
                 Whether you're starting a new job, embarking on an unfamiliar project, or entering a new phase of life, change can leave you feeling uncertain.
             </p>
             <p>
-                Sometimes all you need is more clarity about where you're going—and more confidence that you already have what it takes to get there.
+                Sometimes all you need is more clarity about where you're going, and more confidence that you already have what it takes to get there.
             </p>
             <p>That's why NarraWay exists.</p>
         </div>
@@ -782,7 +940,7 @@
                 <div class="step-card fade-in">
                     <div class="step-number">2</div>
                     <h3>Map Your Journey</h3>
-                    <p>Build a visual map of your challenge or goal—your destination, your starting point, and the terrain you'll navigate in between.</p>
+                    <p>Build a visual map of your challenge or goal: your destination, your starting point, and the terrain you'll navigate in between.</p>
                     <img src="Assets/Screenshots/Step2-New.png" alt="Step 2: Map your terrain">
                 </div>
                 <div class="step-card fade-in">
@@ -857,7 +1015,8 @@
                 <ul class="included-list">
                     <li>Lifetime access to the NarraWay mapping tool</li>
                     <li>Guided video walkthroughs for each step</li>
-                    <li>Exportable journey maps and notes</li>
+                    <li>Exportable journey maps</li>
+                    <li>A printable Logbook to capture your insights</li>
                     <li>All future updates included</li>
                 </ul>
                 <p class="included-note">No subscription. No recurring fees. One payment, lifetime access.</p>
@@ -871,6 +1030,19 @@
             <div class="section-header">
                 <h2>What People Are Saying</h2>
             </div>
+            <!-- Video Testimonial -->
+            <div class="video-testimonial fade-in">
+                <div class="video-testimonial-player">
+                    <iframe src="https://iframe.mediadelivery.net/embed/588279/bbbaa576-f554-4856-8bc8-5ae1103e07cf?autoplay=false&preload=true" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-testimonial-content">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <blockquote>"You begin by identifying your strengths, which is really helpful when it comes to making whatever decision you're thinking about. I enjoyed how visual and gamified Narraway is. It's a fun way to work through challenges and decisions that might feel difficult or uncomfortable in another context."</blockquote>
+                    <p class="testimonial-author">Gwenydd</p>
+                    <p class="testimonial-role">Marketing Consultant</p>
+                </div>
+            </div>
+
             <div class="testimonials-grid">
                 <div class="testimonial-card fade-in">
                     <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -880,9 +1052,9 @@
                 </div>
                 <div class="testimonial-card fade-in">
                     <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                    <blockquote>"You begin by identifying your strengths, which is really helpful when it comes to making whatever decision you're thinking about. I enjoyed how visual and gamified Narraway is. It's a fun way to work through challenges and decisions that might feel difficult or uncomfortable in another context."</blockquote>
-                    <p class="testimonial-author">Gwenydd</p>
-                    <p class="testimonial-role">Marketing Consultant</p>
+                    <blockquote>"The NarraWay interface worked really well for how I think. I could visualize complex dynamics and, by looking at them, I was able to reflect more deeply and discover new insights. The step-by-step approach helped me get real clarity and perspective on the path I have ahead."</blockquote>
+                    <p class="testimonial-author">Marko</p>
+                    <p class="testimonial-role">Executive Coach</p>
                 </div>
                 <div class="testimonial-card fade-in">
                     <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -905,17 +1077,86 @@
         <p>"My life and challenges were laid out vividly before me, showing not only where I am now, but how I can move forward."</p>
     </div>
 
-    <!-- Pricing Section -->
-    <section class="pricing" id="pricing">
+    <!-- Programmes Section -->
+    <section class="programmes" id="programmes">
         <div class="container">
-            <h2>Ready to Start Your Journey?</h2>
-            <div class="price-display">
-                <span class="price-amount">£100</span>
+            <div class="section-header">
+                <h2>Choose Your Programme</h2>
             </div>
-            <p class="price-subtext">One-time payment • Lifetime access</p>
-            <a href="https://app.narraway.co.uk" class="btn btn-primary btn-large">Get NarraWay Now</a>
-            <p class="trust-text">Secure checkout • Instant access • 30-day money-back guarantee</p>
-            <p style="margin-top: 16px;"><a href="https://app.narraway.co.uk" style="color: rgba(255,255,255,0.8); font-size: 0.95rem;">Already have an account? Log in here</a></p>
+            <div class="programmes-grid">
+
+                <!-- Self-Paced -->
+                <div class="programme-card fade-in">
+                    <div class="programme-tier">Self-Paced</div>
+                    <div class="programme-price">£150</div>
+                    <p class="programme-tagline">The full NarraWay experience, in your own time, guided by video.</p>
+                    <div class="programme-body">
+                        <ul>
+                            <li>Lifetime access to the NarraWay app</li>
+                            <li>Guided video walkthroughs for every step</li>
+                            <li>Peer survey templates to gather outside perspectives</li>
+                            <li>Exportable journey maps</li>
+                            <li>A printable Logbook to capture your insights</li>
+                            <li>All future updates included</li>
+                        </ul>
+                        <p class="programme-note">One-time payment. No subscription.</p>
+                        <a href="https://app.narraway.co.uk" class="btn btn-primary">Get Started</a>
+                    </div>
+                </div>
+
+                <!-- One-to-One Coaching -->
+                <div class="programme-card fade-in">
+                    <div class="programme-tier">One-to-One Coaching</div>
+                    <div class="programme-price">£750</div>
+                    <p class="programme-tagline">Three 60-minute sessions with Jamie, working through NarraWay together.</p>
+                    <div class="programme-body">
+                        <ul>
+                            <li>Everything in Self-Paced</li>
+                            <li>Session 1: Peer survey debrief and strength identification</li>
+                            <li>Session 2: Journey mapping and terrain exploration</li>
+                            <li>Session 3: Applying your strengths and planning next steps</li>
+                            <li>Personalised summary and recommendations</li>
+                        </ul>
+                        <p class="programme-note">By bank transfer. Contact to book.</p>
+                        <a href="https://thestoryhabit.com/contact/" target="_blank" class="btn btn-primary">Get in Touch</a>
+                    </div>
+                </div>
+
+                <!-- Team Coaching -->
+                <div class="programme-card fade-in">
+                    <div class="programme-tier">Team Coaching</div>
+                    <div class="programme-price">from £4,500</div>
+                    <p class="programme-tagline">A structured programme for teams navigating change, challenge, or transition together.</p>
+                    <div class="programme-body">
+                        <div class="programme-sub">
+                            <div class="programme-sub-name">Accelerated Programme</div>
+                            <div class="programme-sub-price">£4,500</div>
+                            <div class="programme-sub-desc">A focused half-day workshop: peer surveys, individual mapping, group debrief, and shared action planning.</div>
+                        </div>
+                        <div class="programme-sub">
+                            <div class="programme-sub-name">Full Programme</div>
+                            <div class="programme-sub-price">£6,000</div>
+                            <div class="programme-sub-desc">Everything in the Accelerated Programme, plus individual coaching sessions for each team member and a leadership debrief.</div>
+                        </div>
+                        <p class="programme-note">By bank transfer. Contact to discuss.</p>
+                        <a href="https://thestoryhabit.com/contact/" target="_blank" class="btn btn-primary">Get in Touch</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Logbook Section -->
+    <section class="logbook-section" id="logbook">
+        <div class="container">
+            <div class="logbook-inner">
+                <div class="section-header">
+                    <h2>Your Logbook</h2>
+                </div>
+                <p>Your Logbook is the main output of the NarraWay experience. It captures everything you've discovered: your strengths, your map, your reflections, and your plan for the journey ahead.</p>
+                <p>At the end of each session, you can export your Logbook as a PDF. It's designed to be printed, kept, and returned to. A tangible record of your thinking at this moment in time, and a reference point as you move forward.</p>
+            </div>
         </div>
     </section>
 
@@ -924,7 +1165,7 @@
         <div class="about-content fade-in">
             <h2>Created by Jamie Dixon</h2>
             <p>
-                NarraWay is part of The Story Habit—helping people use narrative and storytelling to create meaningful change. With 15 years of experience in coaching and personal development, I created NarraWay to help people see that they already have what they need to navigate life's challenges.
+                NarraWay is part of The Story Habit, helping people use narrative and storytelling to create meaningful change. With 15 years of experience in coaching and personal development, I created NarraWay to help people see that they already have what they need to navigate life's challenges.
             </p>
             <a href="https://thestoryhabit.com" target="_blank">Learn more about The Story Habit →</a>
         </div>
