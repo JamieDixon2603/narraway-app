@@ -1773,6 +1773,94 @@
             line-height: 1.6;
         }
 
+        /* Pre-work email templates */
+        .pw-template-item {
+            margin-bottom: 24px;
+        }
+
+        .pw-template-label {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .pw-template-textarea {
+            min-height: 210px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .pw-template-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .pw-copy-btn {
+            padding: 7px 18px;
+            background: var(--color-primary);
+            color: var(--color-text);
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .pw-copy-btn:hover { opacity: 0.85; }
+
+        .pw-copy-btn.copied {
+            background: #4caf50;
+            color: white;
+        }
+
+        .pw-delete-template-btn {
+            padding: 7px 14px;
+            background: transparent;
+            color: #999;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .pw-delete-template-btn:hover {
+            color: #c00;
+            border-color: #c00;
+        }
+
+        .pw-add-template-btn {
+            margin-top: 4px;
+            padding: 8px 18px;
+            background: transparent;
+            color: var(--color-primary);
+            border: 2px dashed var(--color-primary);
+            border-radius: 8px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pw-add-template-btn:hover {
+            background: rgba(228, 166, 37, 0.1);
+        }
+
+        .pw-survey-section {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 2px solid var(--color-wood-light);
+        }
+
         /* Strength List Builder */
         .strength-list-input-row {
             display: flex;
@@ -2131,6 +2219,123 @@
 
     <!-- Main Content -->
     <main class="main-content">
+
+        <!-- Pre-work Panel -->
+        <div id="preworkPanel" class="hidden">
+
+            <!-- Intro -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">📋</span>
+                    <h2 class="panel-title">Pre-Work: The Strengths Discovery Process</h2>
+                </div>
+                <div class="instructions">
+                    <p>Begin by completing these two short exercises that together form the foundation of your strengths work: a peer survey and a personal reflection.</p>
+                    <p>Your own reflection tells you what you experience from the inside. Peer feedback tells you what others witness from the outside. Together they reveal a more complete and often more surprising picture of your strengths than either could on its own.</p>
+                </div>
+            </div>
+
+            <!-- Part 1: Peer Survey -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">✉️</span>
+                    <span class="panel-title">Peer Survey</span>
+                </div>
+                <div class="instructions">
+                    <p>Reach out to 8–12 people from different areas of your life. Don't limit this to current colleagues. Think broadly. Former bosses, old friends, people who knew you in a different context entirely. The diversity of perspective is what makes this valuable.</p>
+                    <p>Ask each of them this one question: <strong>When have you seen me at my best?</strong></p>
+                    <p>A template email is below. Choose whichever version feels most natural, copy it, personalise the opening line, and send it.</p>
+                    <p>Allow up to one week for responses to come in before your session.</p>
+                </div>
+
+                <div id="pwTemplatesList">
+                    <!-- Formal template -->
+                    <div class="pw-template-item">
+                        <div class="pw-template-label">Formal Version</div>
+                        <textarea class="notes-textarea pw-template-textarea" id="pwTemplate0">Subject: A quick favour (5 minutes of your time)
+
+Hi [Name],
+
+I'm doing some coaching work at the moment and as part of the preparation I've been asked to gather perspectives from people who know me well.
+
+I'd love it if you could take a few minutes to answer one question. There's no right or wrong answer, and your response will be kept completely between me and my coach.
+
+The question: Can you describe a specific time when you saw me at my best? What was I doing, and what did you notice about how I was showing up?
+
+A few sentences is plenty, though of course more is always welcome. Just reply to this email when you get a chance.
+
+Thank you so much. It genuinely means a lot.
+
+[Your name]</textarea>
+                        <div class="pw-template-actions">
+                            <button class="pw-copy-btn" onclick="copyPwTemplate('pwTemplate0', this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Casual template -->
+                    <div class="pw-template-item">
+                        <div class="pw-template-label">Casual Version</div>
+                        <textarea class="notes-textarea pw-template-textarea" id="pwTemplate1">Subject: A quick favour
+
+Hi [Name],
+
+I'm doing some coaching work and would love your perspective. Could you take a few minutes to answer one question?
+
+When have you seen me at my best? What was I doing, and what did you notice?
+
+A few sentences is plenty. Just reply when you get a chance. Thank you.
+
+[Your name]</textarea>
+                        <div class="pw-template-actions">
+                            <button class="pw-copy-btn" onclick="copyPwTemplate('pwTemplate1', this)">Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Custom templates rendered here -->
+                    <div id="pwCustomTemplates"></div>
+                </div>
+
+                <button class="pw-add-template-btn" onclick="addPwCustomTemplate()">+ Add another template</button>
+
+                <!-- Survey Responses -->
+                <div class="pw-survey-section">
+                    <div class="panel-header">
+                        <span class="panel-icon">📋</span>
+                        <span class="panel-title">Survey Responses</span>
+                    </div>
+                    <span class="section-description">When responses start coming in, paste them here. They'll be ready and waiting in Step 1.</span>
+                    <textarea class="notes-textarea" id="pw_surveyResponses" placeholder="Paste survey responses here..." style="min-height: 150px;"></textarea>
+                </div>
+            </div>
+
+            <!-- Part 2: Self-Reflection -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-icon">🔍</span>
+                    <span class="panel-title">Self-Reflection</span>
+                </div>
+                <div class="instructions">
+                    <p>While you wait for responses, sit with these three questions. Write as much or as little as feels right.</p>
+                    <p>These notes will be visible to you during your first session and will help you choose your equipment cards.</p>
+                    <p>You're not being assessed. Write honestly, even if what comes up feels uncertain or incomplete.</p>
+                </div>
+                <ol class="reflection-prompts">
+                    <li><em>What do people consistently come to you for?</em></li>
+                    <li><em>What feels like play to you but looks like work to others?</em></li>
+                    <li><em>When have you been at your absolute best — what were the conditions and what were you doing?</em></li>
+                </ol>
+                <textarea class="notes-textarea" id="pw_selfReflection" placeholder="Write your reflections here..." style="min-height: 150px;"></textarea>
+            </div>
+
+            <!-- Continue button -->
+            <div class="panel">
+                <div style="display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="continueFromPrework()" style="font-size: 1.1rem; padding: 14px 32px;">Continue to Step 1 →</button>
+                </div>
+            </div>
+
+        </div><!-- end preworkPanel -->
+
         <!-- Step 1: Strengths Profile -->
         <div class="step-container active" id="step1">
             <div class="panel">
@@ -2854,6 +3059,8 @@
             showGridCoords: false,
             teamMode: false,
             coacheeName: '', // user's full name, shown on PDF title page
+            preworkComplete: false,
+            customTemplates: [], // user-added email template strings
         };
 
         // Initialize terrain usage
@@ -3825,8 +4032,90 @@ Created with NarraWay`;
             }
         }
 
+        // ========== PRE-WORK ==========
+        function showPrework() {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            for (let i = 1; i <= 4; i++) {
+                const dot = $(`stepDot${i}`);
+                dot.classList.remove('active', 'completed');
+                dot.classList.add('future');
+                dot.innerHTML = i;
+            }
+            $('pw_surveyResponses').value = $('surveyResponses').value;
+            $('pw_selfReflection').value = $('selfReflection').value;
+            $('preworkPanel').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hidePrework() {
+            $('preworkPanel').classList.add('hidden');
+        }
+
+        function continueFromPrework() {
+            $('surveyResponses').value = $('pw_surveyResponses').value;
+            $('selfReflection').value = $('pw_selfReflection').value;
+            state.preworkComplete = true;
+            goToStep(1);
+            if (autosaveJourneyName && currentUser) autosave();
+        }
+
+        function copyPwTemplate(textareaId, btn) {
+            const text = document.getElementById(textareaId).value;
+            const finish = () => {
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+            };
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(finish).catch(() => {
+                    document.getElementById(textareaId).select();
+                    document.execCommand('copy');
+                    finish();
+                });
+            } else {
+                document.getElementById(textareaId).select();
+                document.execCommand('copy');
+                finish();
+            }
+        }
+
+        function addPwCustomTemplate() {
+            state.customTemplates.push('');
+            renderPwCustomTemplates();
+            const idx = state.customTemplates.length - 1;
+            const ta = document.getElementById(`pwCustomTemplate${idx}`);
+            if (ta) ta.focus();
+        }
+
+        function deletePwCustomTemplate(idx) {
+            state.customTemplates.splice(idx, 1);
+            renderPwCustomTemplates();
+        }
+
+        function renderPwCustomTemplates() {
+            const container = $('pwCustomTemplates');
+            if (!container) return;
+            container.innerHTML = '';
+            state.customTemplates.forEach((text, idx) => {
+                const item = document.createElement('div');
+                item.className = 'pw-template-item';
+                item.innerHTML = `
+                    <div class="pw-template-label">My Template ${idx + 1}</div>
+                    <textarea class="notes-textarea pw-template-textarea" id="pwCustomTemplate${idx}" placeholder="Write your template here..."></textarea>
+                    <div class="pw-template-actions">
+                        <button class="pw-copy-btn" onclick="copyPwTemplate('pwCustomTemplate${idx}', this)">Copy</button>
+                        <button class="pw-delete-template-btn" onclick="deletePwCustomTemplate(${idx})">Delete</button>
+                    </div>`;
+                container.appendChild(item);
+                const ta = item.querySelector('textarea');
+                ta.value = text;
+                ta.addEventListener('input', () => { state.customTemplates[idx] = ta.value; });
+            });
+        }
+
         // ========== NAVIGATION ==========
         function goToStep(step) {
+            hidePrework();
             // Validate forward navigation
             if (step > state.currentStep) {
                 if (step > 1 && state.selectedEquipment.size < 5) return;
@@ -3901,6 +4190,11 @@ Created with NarraWay`;
 
             $('surveyResponses').value = '';
             $('selfReflection').value = '';
+            $('pw_surveyResponses').value = '';
+            $('pw_selfReflection').value = '';
+            state.preworkComplete = false;
+            state.customTemplates = [];
+            renderPwCustomTemplates();
             $('patternsSpotted').value = '';
             $('strengthsSummary').value = '';
             updateStrengthsSummaryWordCount();
@@ -4033,6 +4327,7 @@ Created with NarraWay`;
                 $('journeyNameModal').classList.add('hidden');
                 // Trigger first autosave to create the journey in the database
                 await autosave();
+                showPrework();
             };
 
             // Allow Enter key to confirm journey name
@@ -4042,6 +4337,14 @@ Created with NarraWay`;
                 }
             });
             
+            // Pre-work field sync → Step 1
+            $('pw_surveyResponses').addEventListener('input', () => {
+                $('surveyResponses').value = $('pw_surveyResponses').value;
+            });
+            $('pw_selfReflection').addEventListener('input', () => {
+                $('selfReflection').value = $('pw_selfReflection').value;
+            });
+
             // Navigation
             $('continueToStep2').onclick = () => goToStep(2);
             $('continueToStep3').onclick = () => goToStep(3);
@@ -4140,6 +4443,8 @@ Created with NarraWay`;
                 showGridCoords: state.showGridCoords,
                 teamMode: state.teamMode,
                 coacheeName: state.coacheeName || '',
+                preworkComplete: state.preworkComplete,
+                customTemplates: [...state.customTemplates],
                 // Step 1 — new fields
                 surveyResponses: document.getElementById('surveyResponses').value,
                 selfReflection: document.getElementById('selfReflection').value,
@@ -4199,6 +4504,11 @@ Created with NarraWay`;
             // Derive selectedEquipment from strengthCards
             syncSelectedEquipment();
 
+            state.preworkComplete = data.preworkComplete || false;
+            state.customTemplates = data.customTemplates || [];
+            document.getElementById('pw_surveyResponses').value = data.surveyResponses || '';
+            document.getElementById('pw_selfReflection').value = data.selfReflection || '';
+            renderPwCustomTemplates();
             document.getElementById('surveyResponses').value = data.surveyResponses || '';
             document.getElementById('selfReflection').value = data.selfReflection || '';
             document.getElementById('patternsSpotted').value = data.patternsSpotted || '';
@@ -4240,7 +4550,11 @@ Created with NarraWay`;
             renderTerrainGallery();
             renderMap();
             renderStrategyMap();
-            goToStep(state.currentStep);
+            if (state.preworkComplete) {
+                goToStep(state.currentStep);
+            } else {
+                showPrework();
+            }
         }
 
         // Load journeys from Supabase
