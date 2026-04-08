@@ -2027,7 +2027,7 @@
             padding: 6px 10px;
             border: 2px solid var(--color-wood-light);
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-family: var(--font-heading);
             font-weight: 600;
             color: var(--color-text);
@@ -5571,7 +5571,8 @@ Created with NarraWay`;
         const pad = 5, lineH = 5.5, textW = _P.CW - pad * 2;
         const body = _fv('notes3') || '(Not completed)';
         pdf.setFont(_pdfFont, 'normal'); pdf.setFontSize(10);
-        const boxH = Math.max(22, pad + 11 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad);
+        const maxBoxH = _P.H - _P.BAR - y - 2;
+        const boxH = Math.min(maxBoxH, Math.max(22, pad + 11 + Math.ceil(_nlines(pdf, body, textW)) * lineH + pad));
         _parchBox(pdf, _P.MG, y, _P.CW, boxH);
         _tc(pdf, _P.TEAL); pdf.setFont(_pdfFont, 'bold'); pdf.setFontSize(12);
         pdf.text('My strengths will help me...', _P.MG + pad, y + pad + 5);
