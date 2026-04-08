@@ -2212,9 +2212,11 @@
                     </div>
                 </div>
             </div>
+            <button class="btn btn-secondary" onclick="startNewJourney()" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 4px;">✨ New Journey</button>
             <span id="autosaveIndicator" style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-right: 8px; transition: opacity 0.3s; display: none;"></span>
             <button class="btn btn-secondary" id="changePasswordBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 8px;">Change Password</button>
             <button class="btn btn-secondary" id="logoutBtn" style="font-size: 0.75rem; padding: 6px 12px; margin-right: 16px;">Log Out</button>
+            <button class="step-dot future" data-step="0" id="stepDotPW">0</button>
             <button class="step-dot active" data-step="1" id="stepDot1">1</button>
             <button class="step-dot future" data-step="2" id="stepDot2">2</button>
             <button class="step-dot future" data-step="3" id="stepDot3">3</button>
@@ -2226,7 +2228,7 @@
     <main class="main-content">
 
         <!-- Pre-work Panel -->
-        <div id="preworkPanel" class="hidden">
+        <div id="preworkPanel">
 
             <!-- Intro -->
             <div class="panel">
@@ -2342,7 +2344,7 @@ A few sentences is plenty. Just reply when you get a chance. Thank you.
         </div><!-- end preworkPanel -->
 
         <!-- Step 1: Strengths Profile -->
-        <div class="step-container active" id="step1">
+        <div class="step-container" id="step1">
             <div class="panel">
                 <div class="panel-header">
                     <span class="panel-icon">✓</span>
@@ -2526,8 +2528,8 @@ A few sentences is plenty. Just reply when you get a chance. Thank you.
             </div>
 
             <div class="panel nav-panel">
-                <button class="btn btn-primary" id="continueToStep2" disabled>CONTINUE TO MAPPING →</button>
                 <button class="btn btn-secondary" id="exportStep1Btn" onclick="exportStep1PDF()" style="font-size:0.85rem; position:absolute; left:50%; transform:translateX(-50%);">📄 EXPORT PROFILE</button>
+                <button class="btn btn-primary" id="continueToStep2" disabled style="margin-left:auto;">CONTINUE TO MAPPING →</button>
             </div>
         </div>
 
@@ -4040,6 +4042,8 @@ Created with NarraWay`;
         // ========== PRE-WORK ==========
         function showPrework() {
             document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            const pwDot = $('stepDotPW');
+            if (pwDot) { pwDot.classList.remove('active', 'completed', 'future'); pwDot.classList.add('active'); pwDot.innerHTML = '0'; }
             for (let i = 1; i <= 4; i++) {
                 const dot = $(`stepDot${i}`);
                 dot.classList.remove('active', 'completed');
@@ -4143,6 +4147,12 @@ Created with NarraWay`;
             });
             
             // Update step dots
+            const pwDot = $('stepDotPW');
+            if (pwDot) {
+                pwDot.classList.remove('active', 'completed', 'future');
+                pwDot.classList.add(state.preworkComplete ? 'completed' : 'future');
+                pwDot.innerHTML = state.preworkComplete ? '✓' : '0';
+            }
             for (let i = 1; i <= 4; i++) {
                 const dot = $(`stepDot${i}`);
                 dot.classList.remove('active', 'completed', 'future');
@@ -4359,6 +4369,7 @@ Created with NarraWay`;
             $('backToStep3').onclick = () => goToStep(3);
             
             // Step dots
+            $('stepDotPW').onclick = () => { if (autosaveJourneyName) showPrework(); };
             for (let i = 1; i <= 4; i++) {
                 $(`stepDot${i}`).onclick = () => goToStep(i);
             }
