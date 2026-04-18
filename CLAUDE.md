@@ -130,7 +130,7 @@ _Ask Claude to update this section at regular intervals during chats._
 **Business/pricing decisions confirmed:**
 - Individual £150 — Stripe checkout (automated)
 - One-to-one coaching £750 — bank transfer + manual Supabase invite
-- Team coaching £6,000 — bank transfer + manual Supabase invite
+- Team coaching £2,995 — 1 Full Day or 2 x Half Days — bank transfer + manual Supabase invite
 - Manual Supabase setup: invite user → immediately set `subscription_status = "active"` (no need to wait for password)
 
 **Remaining work agreed:**
